@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Transparent background test</title>
+</head>
+<style type="text/css">
+    #container {
+      width: 100%;
+      padding-top: 200px;
+    }
+
+    button {
+      height: 120px;
+      width: 100%;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+</style>
+
+<body>
+<div id="container">
+    <button id="connect">connect</button>
+    <button id="transaction">send transaction</button>
+    <button id="message">sign message</button>
+</div>
+</body>
+<script>
+    window.onload = () => {
+        var connect = document.getElementById("connect");
+        var transaction = document.getElementById("transaction");
+        var message = document.getElementById("message");
+        var account = {
+            address: "123454050505",
+            email: "lx1234@gmail.com",
+            newborn: false,
+        };
+        connect.addEventListener('click', () => {
+            window.UnipassPoster.postMessage(JSON.stringify(account));
+        });
+        transaction.addEventListener('click', () => {
+            window.UnipassPoster.postMessage("transaction result");
+        });
+        message.addEventListener('click', () => {
+            window.UnipassPoster.postMessage("message result");
+        });
+    };
+</script>
+
+</html>
