@@ -1,9 +1,13 @@
 library unipass_web_sdk;
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:unipass_web_sdk/abi/verifySig.g.dart';
 import 'package:unipass_web_sdk/utils/config.dart';
 import 'package:unipass_web_sdk/utils/storage.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart' as web3;
 import 'package:unipass_web_sdk/utils/interface.dart';
 import 'package:unipass_web_sdk/push.dart';
@@ -22,19 +26,21 @@ class UniPassWeb {
 
   void _init(UniPassOption option) {
     ChainType chainType = option.chainType ?? ChainType.polygon;
-    Environment env = option.env ?? Environment.dev;
+    Environment env = option.env ?? Environment.testnet;
     String rpcUrl = option.nodeRPC ?? getRpcUrl(env, chainType);
+    AppSetting appSetting = option.appSetting ?? AppSetting(theme: UnipassTheme.dark, chainType: chainType);
     _config = UniPassConfig(
       nodeRPC: rpcUrl,
       chainType: chainType,
       env: env,
       domain: option.domain ?? upDomain,
       protocol: option.protocol ?? "https",
+      appSetting: appSetting,
     );
     Storage.init();
   }
 
-  Future<UpAccount> login(BuildContext context, String email) async {
+  Future<UpAccount> connect(BuildContext context, String email) async {
     UpAccount upAccount = await pushConnect(context, email, _config);
     Storage.saveUpAccount(upAccount);
     _account = upAccount;
@@ -43,8 +49,32 @@ class UniPassWeb {
     return upAccount;
   }
 
-  Future<bool> logout() async {
-    return await disConnect();
+  Future<String> signMessage(BuildContext context, String message) async {
+    _checkInitialized();
+    String signedMessage = await pushSignMessage(context, message, _account!, _config);
+    print("[signedMessage:] $signedMessage");
+    return signedMessage;
+  }
+
+  Future<String> sendTransaction(BuildContext context, TransactionMessage transaction) async {
+    _checkInitialized();
+    String txHash = await pushSendTransaction(context, transaction, _config);
+    print("[txHash:] $txHash");
+    return txHash;
+  }
+
+  Future<bool> isValidSignature(String message, String sig) async {
+    _checkInitialized();
+    final hash_ = keccak256(Uint8List.fromList(message.codeUnits));
+    Uint8List code = await VerifySig(address: web3.EthereumAddress.fromHex(_account!.address), client: _provider!).isValidSignature(
+      hash_,
+      hexToBytes(sig),
+    );
+    return bytesToHex(code, include0x: true) == "0x1626ba7e";
+  }
+
+  Future<void> logout() async {
+    await disConnect();
   }
 
   web3.Web3Client getProvider() {

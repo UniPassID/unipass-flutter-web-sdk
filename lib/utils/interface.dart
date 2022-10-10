@@ -1,20 +1,24 @@
 import 'dart:convert';
 
-enum Environment { dev, test, prod }
+enum Environment { testnet, mainnet }
 
 enum ChainType { polygon, bsc, rangers }
 
 enum Protocol { https, http }
 
+enum UnipassTheme { light, dark }
+
 enum MessageType {
-  UP_READY,
-  UP_RESPONSE,
-  UP_CLOSE,
-  UP_SIGN_MESSAGE,
-  UP_TRANSACTION,
-  UP_LOGIN,
-  UP_EVENT,
-  UP_ERROR,
+  upReady,
+  upSignMessage,
+  upSendTransaction,
+  upConnect,
+}
+
+enum WebViewPageType {
+  connect,
+  signMessage,
+  sendTransaction,
 }
 
 /// connect success return values
@@ -36,6 +40,24 @@ class UpAccount {
   }
 }
 
+class TransactionMessage {
+  String from;
+  String to;
+  String value;
+  String data;
+
+  TransactionMessage({required this.from, required this.to, required this.value, required this.data});
+}
+
+class AppSetting {
+  String? appName;
+  String? appIcon;
+  UnipassTheme theme;
+  ChainType chainType;
+
+  AppSetting({this.appName, this.appIcon, required this.theme, required this.chainType});
+}
+
 /// init sdk props
 class UniPassOption {
   String? nodeRPC;
@@ -43,8 +65,9 @@ class UniPassOption {
   Environment? env;
   String? domain;
   String? protocol;
+  AppSetting? appSetting;
 
-  UniPassOption({this.nodeRPC, this.chainType, this.env, this.domain, this.protocol});
+  UniPassOption({this.nodeRPC, this.chainType, this.env, this.domain, this.protocol, this.appSetting});
 }
 
 /// sdk config
@@ -54,6 +77,7 @@ class UniPassConfig {
   Environment env;
   String domain;
   String protocol;
+  AppSetting appSetting;
 
   UniPassConfig({
     required this.nodeRPC,
@@ -61,10 +85,6 @@ class UniPassConfig {
     required this.env,
     required this.domain,
     required this.protocol,
+    required this.appSetting,
   });
 }
-
-// class BasePayload {
-//   MessageType type;
-//   String payload;
-// }

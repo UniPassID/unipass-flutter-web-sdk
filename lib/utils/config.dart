@@ -22,7 +22,7 @@ RpcUrl rpcUrl = RpcUrl(
 );
 
 String getRpcUrl(Environment env, ChainType chainType) {
-  if (env == Environment.dev || env == Environment.test) {
+  if (env == Environment.testnet) {
     switch (chainType) {
       case ChainType.polygon:
         return rpcUrl.polygonMumbai;
@@ -50,13 +50,13 @@ String getWalletUrl(MessageType type, String? domain, String? protocol) {
   final domain_ = domain ?? upDomain;
 
   switch (type) {
-    case MessageType.UP_LOGIN:
+    case MessageType.upConnect:
       return '$protocol_://$domain_/connect';
-    case MessageType.UP_SIGN_MESSAGE:
+    case MessageType.upSignMessage:
       return '$protocol_://$domain_/sign-message';
-    case MessageType.UP_TRANSACTION:
+    case MessageType.upSendTransaction:
       return '$protocol_://$domain_/send-transaction';
-    case MessageType.UP_READY:
+    case MessageType.upReady:
       return '$protocol_://$domain_/connect/loading';
     default:
       return domain_;
