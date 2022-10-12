@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:unipass_web_sdk/utils/interface.dart';
+import 'package:unipass_web_sdk/utils/storage.dart' as storage;
 
 class SignMessagePage extends StatefulWidget {
   const SignMessagePage({
@@ -29,6 +30,7 @@ class SignMessagePage extends StatefulWidget {
 
 class _SignMessagePageState extends State<SignMessagePage> {
   final GlobalKey webViewKey = GlobalKey();
+  double progress = 0;
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -59,41 +61,49 @@ class _SignMessagePageState extends State<SignMessagePage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Flutter WebView example'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-            widget.signFuture.completeError("user reject operate");
-          },
+          backgroundColor: Colors.white,
+          title: const Text('send transaction', style: TextStyle(color: Colors.black)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.signFuture.completeError("user reject operate");
+            },
+          ),
         ),
-      ),
-      body: InAppWebView(
-        key: webViewKey,
-        initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
-        initialOptions: options,
-        gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
-        onWebViewCreated: (controller) {
-          webViewController = controller;
-          _addJavaScriptHandlers(controller);
-        },
-        onReceivedServerTrustAuthRequest: (controller, challenge) async {
-          return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
-        },
-        onConsoleMessage: (controller, consoleMessage) {
-          print(consoleMessage);
-        },
-        onProgressChanged: (controller, progress) {
-          print('WebView is loading (progress : $progress%)');
-        },
-        onLoadStart: (controller, url) {
-          print('Page started loading: $url');
-        },
-        onLoadStop: (controller, url) async {
-          print('Page finished loading: $url');
-        },
-      ),
-    );
+        body: Stack(
+          children: [
+            InAppWebView(
+              key: webViewKey,
+              initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
+              initialOptions: options,
+              gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
+              onWebViewCreated: (controller) {
+                webViewController = controller;
+                _addJavaScriptHandlers(controller);
+              },
+              onReceivedServerTrustAuthRequest: (controller, challenge) async {
+                return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                print(consoleMessage);
+              },
+              onProgressChanged: (controller, progress) {
+                print('WebView is loading (progress : $progress%)');
+                setState(() {
+                  this.progress = progress / 100;
+                });
+              },
+              onLoadStart: (controller, url) {
+                print('Page started loading: $url');
+              },
+              onLoadStop: (controller, url) async {
+                print('Page finished loading: $url');
+              },
+            ),
+            progress < 1.0 ? LinearProgressIndicator(value: progress) : const SizedBox(),
+          ],
+        ));
   }
 
   void _addJavaScriptHandlers(InAppWebViewController controller) {
@@ -117,6 +127,29 @@ class _SignMessagePageState extends State<SignMessagePage> {
       },
     );
     controller.addJavaScriptHandler(
+      handlerName: "onUserInfoInvalid",
+      callback: (args) {
+        print("onUserInfoInvalid args $args");
+        try {
+          if (args[0] != null) {
+            if (args[0]["type"] == "UP_RESPONSE") {
+              final payload = json.decode(args[0]["payload"]);
+              if (payload["data"] == "expired") {
+                if (!widget.signFuture.isCompleted) {
+                  Navigator.pop(context);
+                  widget.signFuture.completeError("user info expired");
+                  storage.Storage.removeUpAccount();
+                }
+                return;
+              }
+            }
+          }
+        } catch (error, s) {
+          debugPrint("[onUserInfoInvalid error] $error $s");
+        }
+      },
+    );
+    controller.addJavaScriptHandler(
       handlerName: "onSingMessageResponse",
       callback: (args) {
         print("onSingMessageResponse args $args");
@@ -133,8 +166,6 @@ class _SignMessagePageState extends State<SignMessagePage> {
                 }
                 return;
               }
-
-              /// font end user info not valid
 
               if (!widget.signFuture.isCompleted) {
                 Navigator.pop(context);

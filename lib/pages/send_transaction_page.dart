@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:unipass_web_sdk/utils/interface.dart';
+import 'package:unipass_web_sdk/utils/storage.dart' as storage;
 
 class SendTransactionPage extends StatefulWidget {
   const SendTransactionPage({
@@ -27,6 +28,7 @@ class SendTransactionPage extends StatefulWidget {
 
 class _SendTransactionPageState extends State<SendTransactionPage> {
   final GlobalKey webViewKey = GlobalKey();
+  double progress = 0;
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -57,39 +59,48 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Flutter WebView example'),
+        backgroundColor: Colors.white,
+        title: const Text('send transaction', style: TextStyle(color: Colors.black)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
             widget.transactionFuture.completeError("user reject operate");
           },
         ),
       ),
-      body: InAppWebView(
-        key: webViewKey,
-        initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
-        initialOptions: options,
-        gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
-        onWebViewCreated: (controller) {
-          webViewController = controller;
-          _addJavaScriptHandlers(controller);
-        },
-        onReceivedServerTrustAuthRequest: (controller, challenge) async {
-          return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
-        },
-        onConsoleMessage: (controller, consoleMessage) {
-          print(consoleMessage);
-        },
-        onProgressChanged: (controller, progress) {
-          print('WebView is loading (progress : $progress%)');
-        },
-        onLoadStart: (controller, url) {
-          print('Page started loading: $url');
-        },
-        onLoadStop: (controller, url) async {
-          print('Page finished loading: $url');
-        },
+      body: Stack(
+        children: [
+          InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
+            initialOptions: options,
+            gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+              _addJavaScriptHandlers(controller);
+            },
+            onReceivedServerTrustAuthRequest: (controller, challenge) async {
+              return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
+            },
+            onConsoleMessage: (controller, consoleMessage) {
+              print(consoleMessage);
+            },
+            onProgressChanged: (controller, progress) {
+              print('WebView is loading (progress : $progress%)');
+              setState(() {
+                this.progress = progress / 100;
+              });
+            },
+            onLoadStart: (controller, url) {
+              print('Page started loading: $url');
+            },
+            onLoadStop: (controller, url) async {
+              print('Page finished loading: $url');
+            },
+          ),
+          progress < 1.0 ? LinearProgressIndicator(value: progress) : const SizedBox(),
+        ],
       ),
     );
   }
@@ -118,6 +129,29 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
       },
     );
     controller.addJavaScriptHandler(
+      handlerName: "onUserInfoInvalid",
+      callback: (args) {
+        print("onUserInfoInvalid args $args");
+        try {
+          if (args[0] != null) {
+            if (args[0]["type"] == "UP_RESPONSE") {
+              final payload = json.decode(args[0]["payload"]);
+              if (payload["data"] == "expired") {
+                if (!widget.transactionFuture.isCompleted) {
+                  Navigator.pop(context);
+                  widget.transactionFuture.completeError("user info expired");
+                  storage.Storage.removeUpAccount();
+                }
+                return;
+              }
+            }
+          }
+        } catch (error, s) {
+          debugPrint("[onUserInfoInvalid error] $error $s");
+        }
+      },
+    );
+    controller.addJavaScriptHandler(
       handlerName: "onSendTransactionResponse",
       callback: (args) {
         print("onSendTransactionResponse args $args");
@@ -128,10 +162,11 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
               if (payload["type"] == "DECLINE") {
                 if (!widget.transactionFuture.isCompleted) {
                   Navigator.pop(context);
-                  widget.transactionFuture.completeError("user reject sign message");
+                  widget.transactionFuture.completeError("user reject send transaction");
                 }
                 return;
               }
+
               if (!widget.transactionFuture.isCompleted) {
                 Navigator.pop(context);
                 widget.transactionFuture.complete(payload["data"]);
@@ -142,7 +177,7 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
           debugPrint("[unipass connect error] $error $s");
           if (!widget.transactionFuture.isCompleted) {
             Navigator.pop(context);
-            widget.transactionFuture.completeError("sign message failed");
+            widget.transactionFuture.completeError("send transaction failed");
           }
         }
       },

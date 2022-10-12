@@ -25,6 +25,7 @@ class ConnectPage extends StatefulWidget {
 
 class _ConnectPageState extends State<ConnectPage> {
   final GlobalKey webViewKey = GlobalKey();
+  double progress = 0;
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -55,39 +56,52 @@ class _ConnectPageState extends State<ConnectPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Flutter WebView example'),
+        backgroundColor: Colors.white,
+        title: const Text('connect', style: TextStyle(color: Colors.black)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
             widget.connectFuture.completeError("user reject operate");
           },
         ),
       ),
-      body: InAppWebView(
-        key: webViewKey,
-        initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
-        initialOptions: options,
-        gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
-        onWebViewCreated: (controller) {
-          webViewController = controller;
-          _addJavaScriptHandlers(controller);
-        },
-        onReceivedServerTrustAuthRequest: (controller, challenge) async {
-          return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
-        },
-        onConsoleMessage: (controller, consoleMessage) {
-          print(consoleMessage);
-        },
-        onProgressChanged: (controller, progress) {
-          print('WebView is loading (progress : $progress%)');
-        },
-        onLoadStart: (controller, url) {
-          print('Page started loading: $url');
-        },
-        onLoadStop: (controller, url) async {
-          print('Page finished loading: $url');
-        },
+      body: Stack(
+        children: [
+          InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
+            initialOptions: options,
+            gestureRecognizers: Set()..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+              _addJavaScriptHandlers(controller);
+            },
+            onReceivedServerTrustAuthRequest: (controller, challenge) async {
+              return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
+            },
+            onLoadError: (InAppWebViewController controller, Uri? url, int code, String message) {
+              print("[load error] $message");
+              print("[load error] $code");
+            },
+            onConsoleMessage: (controller, consoleMessage) {
+              print(consoleMessage);
+            },
+            onProgressChanged: (controller, progress) {
+              print('WebView is loading (progress : $progress%)');
+              setState(() {
+                this.progress = progress / 100;
+              });
+            },
+            onLoadStart: (controller, url) {
+              print('Page started loading: $url');
+            },
+            onLoadStop: (controller, url) async {
+              print('Page finished loading: $url');
+            },
+          ),
+          progress < 1.0 ? LinearProgressIndicator(value: progress) : const SizedBox(),
+        ],
       ),
     );
   }

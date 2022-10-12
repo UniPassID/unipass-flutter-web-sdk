@@ -40,8 +40,8 @@ class UniPassWeb {
     Storage.init();
   }
 
-  Future<UpAccount> connect(BuildContext context, String email) async {
-    UpAccount upAccount = await pushConnect(context, email, _config);
+  Future<UpAccount> connect(BuildContext context) async {
+    UpAccount upAccount = await pushConnect(context, _config);
     Storage.saveUpAccount(upAccount);
     _account = upAccount;
     _initialized = true;
@@ -85,6 +85,18 @@ class UniPassWeb {
   String getAddress() {
     _checkInitialized();
     return _account!.address;
+  }
+
+  void updateConfig({UnipassTheme? theme, ChainType? chainType, String? nodeRPC}) {
+    if (theme != null) {
+      _config.appSetting.theme = theme;
+    }
+    if (chainType != null) {
+      _config.appSetting.chainType = chainType;
+    }
+    if (nodeRPC != null) {
+      _config.nodeRPC = nodeRPC;
+    }
   }
 
   void _checkInitialized() {
