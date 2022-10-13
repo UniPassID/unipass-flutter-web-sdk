@@ -7,7 +7,9 @@ import 'package:web3dart/crypto.dart';
 
 import 'erc20.g.dart';
 
-const usdcAddress = "0xd6Ed1C13914FF1b08737b29De4039F542162cAE1";
+const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
+const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
+const rangersUsdcAddress = "0xd6ed1c13914ff1b08737b29de4039f542162cae1";
 const usdcDecimal = 6;
 
 class TestPage extends StatefulWidget {
@@ -28,6 +30,7 @@ class _TestPage extends State<TestPage> {
   String isValidSignature = "";
 
   BigInt balance = BigInt.zero;
+  BigInt usdcBalance = BigInt.zero;
 
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController _sigController = TextEditingController();
@@ -79,15 +82,23 @@ class _TestPage extends State<TestPage> {
                   setState(() {
                     accountString = "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn}";
                   });
-                  web3.EtherAmount balance_ =
-                      await uniPassWeb.getProvider().getBalance(web3.EthereumAddress.fromHex(uniPassWeb.getAddress()));
-                  print("${widget.chainType.name} balance: ${balance_.getInWei}");
+                  web3.Web3Client client = uniPassWeb.getProvider();
+                  web3.EthereumAddress address = web3.EthereumAddress.fromHex(uniPassWeb.getAddress());
+                  web3.EtherAmount balance_ = await client.getBalance(address);
+
+                  Erc20 contract = Erc20(address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)), client: client);
+                  BigInt usdcBalance_ = await contract.balanceOf(address);
+
+                  print("${widget.chainType.name} balance: ${balance_.getInWei.toString()}");
+                  print("usdcBalance: ${usdcBalance_.toString()}");
                   setState(() {
                     balance = balance_.getInWei;
+                    usdcBalance = usdcBalance_;
                   });
-                } catch (err) {
+                } catch (err, s) {
+                  print(s);
                   setState(() {
-                    accountString = "user reject connect";
+                    accountString = err.toString();
                   });
                 }
               },
@@ -200,7 +211,8 @@ class _TestPage extends State<TestPage> {
                   setState(() {
                     isValidSignature = isValid.toString();
                   });
-                } catch (err) {
+                } catch (err, s) {
+                  print(s);
                   setState(() {
                     isValidSignature = err.toString();
                   });
@@ -218,7 +230,7 @@ class _TestPage extends State<TestPage> {
         const SizedBox(height: 30),
         Column(
           children: [
-            Text("${widget.chainType.name} balance: ${(balance / BigInt.from(10).pow(18)).toString()}"),
+            Text("${_formatNativeTokenName(widget.chainType)} balance: ${(balance / BigInt.from(10).pow(18)).toString()}"),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 60),
@@ -293,6 +305,8 @@ class _TestPage extends State<TestPage> {
         const SizedBox(height: 30),
         Column(
           children: [
+            Text("USDC balance: ${(usdcBalance / BigInt.from(10).pow(widget.chainType == ChainType.bsc ? 18 : 6)).toString()}"),
+            const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 60),
               child: TextFormField(
@@ -320,13 +334,17 @@ class _TestPage extends State<TestPage> {
             ),
             OutlinedButton(
               onPressed: () async {
+                if (usdcBalance == BigInt.zero) {
+                  _showToast("usdc balance is zero");
+                  return;
+                }
                 if (_transactionErc20Controller.text.isEmpty || _toErc20Controller.text.isEmpty) {
                   _showToast("input is empty");
                   return;
                 }
                 try {
                   final erc20TokenData = Erc20(
-                    address: web3.EthereumAddress.fromHex(usdcAddress),
+                    address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)),
                     client: uniPassWeb.getProvider(),
                   ).self.function("transfer").encodeCall(
                     [
@@ -339,7 +357,7 @@ class _TestPage extends State<TestPage> {
                     context,
                     TransactionMessage(
                       from: uniPassWeb.getAddress(),
-                      to: usdcAddress,
+                      to: _formatUsdcAddress(widget.chainType),
                       value: "0x",
                       data: bytesToHex(erc20TokenData, include0x: true),
                     ),
@@ -383,12 +401,17 @@ class _TestPage extends State<TestPage> {
                 accountString = "";
                 signedMessage = "";
                 transactionHash = "";
+                erc20TransactionHash = "";
                 isValidSignature = "";
                 _messageController.text = "";
                 _sigController.text = "";
                 _verifyMessageController.text = "";
                 _transactionController.text = "";
-                // _toController.text = "";
+                _transactionErc20Controller.text = "";
+                _toController.text = "";
+                _toErc20Controller.text = "";
+                balance = BigInt.zero;
+                usdcBalance = BigInt.zero;
               });
             },
           ),
@@ -400,6 +423,20 @@ class _TestPage extends State<TestPage> {
 
   void _showToast(String msg) {
     showToast(msg);
+  }
+
+  String _formatNativeTokenName(ChainType chainType) {
+    if (chainType == ChainType.polygon) return "Matic";
+    if (chainType == ChainType.bsc) return "BNB";
+    if (chainType == ChainType.rangers) return "RPG";
+    return "";
+  }
+
+  String _formatUsdcAddress(ChainType chainType) {
+    if (chainType == ChainType.polygon) return polygonUsdcAddress;
+    if (chainType == ChainType.bsc) return bscUsdcAddress;
+    if (chainType == ChainType.rangers) return rangersUsdcAddress;
+    return "";
   }
 }
 
