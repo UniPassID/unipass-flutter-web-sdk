@@ -114,8 +114,8 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
           "appSetting": {
             "appName": widget.appSetting.appName,
             "appIcon": widget.appSetting.appIcon,
-            "chain": widget.appSetting.chainType.name,
-            "theme": widget.appSetting.theme.name,
+            "chain": widget.appSetting.chainType?.name,
+            "theme": widget.appSetting.theme?.name,
           },
           "payload": {
             "from": widget.transaction.from,

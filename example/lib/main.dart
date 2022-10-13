@@ -75,7 +75,7 @@ class _TestPage extends State<TestPage> {
 
   UniPassWeb uniPassWeb = UniPassWeb(
     UniPassOption(
-      domain: "192.168.2.12:1910",
+      domain: "d.wallet.unipass.vip",
       protocol: "https",
       appSetting: AppSetting(
         appName: "demo dapp",

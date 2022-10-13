@@ -46,28 +46,43 @@ class TransactionMessage {
   String value;
   String data;
 
-  TransactionMessage({required this.from, required this.to, required this.value, required this.data});
+  TransactionMessage({
+    required this.from,
+    required this.to,
+    required this.value,
+    required this.data,
+  });
 }
 
 class AppSetting {
   String? appName;
   String? appIcon;
-  UnipassTheme theme;
-  ChainType chainType;
+  UnipassTheme? theme;
+  ChainType? chainType;
 
-  AppSetting({this.appName, this.appIcon, required this.theme, required this.chainType});
+  AppSetting({
+    this.appName,
+    this.appIcon,
+    this.theme,
+    this.chainType,
+  });
 }
 
 /// init sdk props
 class UniPassOption {
   String? nodeRPC;
-  ChainType? chainType;
   Environment? env;
   String? domain;
   String? protocol;
   AppSetting? appSetting;
 
-  UniPassOption({this.nodeRPC, this.chainType, this.env, this.domain, this.protocol, this.appSetting});
+  UniPassOption({
+    this.nodeRPC,
+    this.env,
+    this.domain,
+    this.protocol,
+    this.appSetting,
+  });
 }
 
 /// sdk config

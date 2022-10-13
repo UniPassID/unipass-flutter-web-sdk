@@ -115,8 +115,8 @@ class _SignMessagePageState extends State<SignMessagePage> {
           "appSetting": {
             "appName": widget.appSetting.appName,
             "appIcon": widget.appSetting.appIcon,
-            "chain": widget.appSetting.chainType.name,
-            "theme": widget.appSetting.theme.name,
+            "chain": widget.appSetting.chainType?.name,
+            "theme": widget.appSetting.theme?.name,
           },
           "payload": {
             "from": widget.from,

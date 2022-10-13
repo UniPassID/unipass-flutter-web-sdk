@@ -25,10 +25,11 @@ class UniPassWeb {
   }
 
   void _init(UniPassOption option) {
-    ChainType chainType = option.chainType ?? ChainType.polygon;
+    ChainType chainType = option.appSetting?.chainType ?? ChainType.polygon;
     Environment env = option.env ?? Environment.testnet;
     String rpcUrl = option.nodeRPC ?? getRpcUrl(env, chainType);
-    AppSetting appSetting = option.appSetting ?? AppSetting(theme: UnipassTheme.dark, chainType: chainType);
+    AppSetting appSetting = option.appSetting ?? AppSetting(theme: UnipassTheme.dark);
+    appSetting.chainType = chainType;
     _config = UniPassConfig(
       nodeRPC: rpcUrl,
       chainType: chainType,
