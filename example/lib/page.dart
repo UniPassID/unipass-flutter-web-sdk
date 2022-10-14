@@ -15,8 +15,9 @@ const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key, required this.theme, required this.chainType});
+  const TestPage({super.key, required this.theme, required this.chainType, required this.domain});
 
+  final String domain;
   final UnipassTheme theme;
   final ChainType chainType;
 
@@ -47,9 +48,10 @@ class _TestPage extends State<TestPage> {
   @override
   void initState() {
     super.initState();
+    print('current domain: ${widget.domain}');
     uniPassWeb = UniPassWeb(
       UniPassOption(
-        domain: "d.wallet.unipass.vip",
+        domain: widget.domain,
         protocol: "https",
         appSetting: AppSetting(
           appName: "demo dapp",
@@ -410,8 +412,8 @@ class _TestPage extends State<TestPage> {
                 _verifyMessageController.text = "";
                 _transactionController.text = "";
                 _transactionErc20Controller.text = "";
-                _toController.text = "";
-                _toErc20Controller.text = "";
+                // _toController.text = "";
+                // _toErc20Controller.text = "";
                 balance = BigInt.zero;
                 usdcBalance = BigInt.zero;
               });

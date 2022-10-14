@@ -52,6 +52,10 @@ class _HomePageState extends State<HomePage> {
   UnipassTheme theme = UnipassTheme.light;
   ChainType chainType = ChainType.polygon;
 
+  String domain = "testnet.wallet.unipass.id";
+
+  int count = 0;
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -119,6 +123,20 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         const SizedBox(height: 10),
+        GestureDetector(
+          child: Text("domain: $domain", textAlign: TextAlign.center),
+          onTap: () {
+            setState(() {
+              count++;
+            });
+            if (count == 10) {
+              setState(() {
+                domain = "d.wallet.unipass.vip";
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 10),
         Align(
           alignment: Alignment.center,
           child: OutlinedButton(
@@ -126,7 +144,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType);
+                  return TestPage(theme: theme, chainType: chainType, domain: domain);
                 }),
               );
             },
