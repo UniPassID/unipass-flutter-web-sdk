@@ -60,3 +60,4 @@ class UniPassOption {
     ),
   );
 ```
+For more information please visit [demo project](https://github.com/UniPassID/unipass-flutter-web-sdk/tree/master/example).
