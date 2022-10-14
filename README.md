@@ -7,7 +7,7 @@ A Flutter plugin that allows you using unipass with webview page.
 
 ## Installation
 
-Add `unipass_webview` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+Add `unipass_web_sdk` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
 
 ## Usage
 
