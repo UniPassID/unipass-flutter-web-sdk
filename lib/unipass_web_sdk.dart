@@ -18,6 +18,7 @@ class UniPassWeb {
   late UniPassConfig _config;
   UpAccount? _account;
   web3.Web3Client? _provider;
+  web3.Web3Client? _authProvider;
   bool _initialized = false;
 
   UniPassWeb(UniPassOption option) {
@@ -30,6 +31,7 @@ class UniPassWeb {
     String rpcUrl = option.nodeRPC ?? getRpcUrl(env, chainType);
     AppSetting appSetting = option.appSetting ?? AppSetting(theme: UnipassTheme.dark);
     appSetting.chainType = chainType;
+    _authProvider = web3.Web3Client(getRpcUrl(env, ChainType.polygon), Client());
     _config = UniPassConfig(
       nodeRPC: rpcUrl,
       chainType: chainType,
@@ -67,7 +69,7 @@ class UniPassWeb {
   Future<bool> isValidSignature(String message, String sig) async {
     _checkInitialized();
     final hash_ = keccak256(Uint8List.fromList(message.codeUnits));
-    Uint8List code = await VerifySig(address: web3.EthereumAddress.fromHex(_account!.address), client: _provider!).isValidSignature(
+    Uint8List code = await VerifySig(address: web3.EthereumAddress.fromHex(_account!.address), client: _authProvider!).isValidSignature(
       hash_,
       hexToBytes(sig),
     );

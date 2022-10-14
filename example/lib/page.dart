@@ -10,7 +10,9 @@ import 'erc20.g.dart';
 const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
 const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
 const rangersUsdcAddress = "0xd6ed1c13914ff1b08737b29de4039f542162cae1";
-const usdcDecimal = 6;
+const polygonUsdcDecimal = 6;
+const bscUsdcDecimal = 18;
+const rangersUsdcDecimal = 6;
 
 class TestPage extends StatefulWidget {
   const TestPage({super.key, required this.theme, required this.chainType});
@@ -274,7 +276,7 @@ class _TestPage extends State<TestPage> {
                       from: uniPassWeb.getAddress(),
                       to: _toController.text,
                       value: etherToWei(_transactionController.text, decimal: 18),
-                      data: "0x00",
+                      data: "0x",
                     ),
                   );
                   setState(() {
@@ -349,7 +351,7 @@ class _TestPage extends State<TestPage> {
                   ).self.function("transfer").encodeCall(
                     [
                       web3.EthereumAddress.fromHex(_toErc20Controller.text),
-                      etherToWei(_transactionErc20Controller.text, decimal: usdcDecimal, toString: false),
+                      etherToWei(_transactionErc20Controller.text, decimal: _formatUsdcDecimal(widget.chainType), toString: false),
                     ],
                   );
 
@@ -437,6 +439,13 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.bsc) return bscUsdcAddress;
     if (chainType == ChainType.rangers) return rangersUsdcAddress;
     return "";
+  }
+
+  int _formatUsdcDecimal(ChainType chainType) {
+    if (chainType == ChainType.polygon) return polygonUsdcDecimal;
+    if (chainType == ChainType.bsc) return bscUsdcDecimal;
+    if (chainType == ChainType.rangers) return rangersUsdcDecimal;
+    return 18;
   }
 }
 
