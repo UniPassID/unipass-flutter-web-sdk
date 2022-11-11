@@ -15,11 +15,12 @@ const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key, required this.theme, required this.chainType, required this.domain});
+  const TestPage({super.key, required this.theme, required this.chainType, required this.domain, this.connectType});
 
   final String domain;
   final UnipassTheme theme;
   final ChainType chainType;
+  final ConnectType? connectType;
 
   @override
   State<TestPage> createState() => _TestPage();
@@ -58,6 +59,8 @@ class _TestPage extends State<TestPage> {
           theme: widget.theme,
           chainType: widget.chainType,
         ),
+        returnEmail: false,
+        connectType: widget.connectType,
       ),
     );
     _toController.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";

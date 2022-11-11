@@ -87,6 +87,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         const SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -136,7 +137,38 @@ class _HomePageState extends State<HomePage> {
             }
           },
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
+        const Text("Onboarding users through Google and Email", textAlign: TextAlign.center),
+        Align(
+          alignment: Alignment.center,
+          child: OutlinedButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.google);
+                }),
+              );
+            },
+            child: const Text("Connect With Google"),
+          ),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: OutlinedButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.email);
+                }),
+              );
+            },
+            child: const Text("Connect With Email"),
+          ),
+        ),
+        const SizedBox(height: 30),
+        const Text("Onboarding users through one button", textAlign: TextAlign.center),
         Align(
           alignment: Alignment.center,
           child: OutlinedButton(
@@ -148,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                 }),
               );
             },
-            child: const Text("init sdk"),
+            child: const Text("Connect UniPass"),
           ),
         ),
       ],

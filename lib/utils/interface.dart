@@ -21,6 +21,11 @@ enum WebViewPageType {
   sendTransaction,
 }
 
+enum ConnectType {
+  google,
+  email,
+}
+
 /// connect success return values
 class UpAccount {
   String address;
@@ -75,6 +80,8 @@ class UniPassOption {
   String? domain;
   String? protocol;
   AppSetting? appSetting;
+  bool? returnEmail;
+  ConnectType? connectType;
 
   UniPassOption({
     this.nodeRPC,
@@ -82,6 +89,8 @@ class UniPassOption {
     this.domain,
     this.protocol,
     this.appSetting,
+    this.returnEmail,
+    this.connectType,
   });
 }
 
@@ -93,6 +102,8 @@ class UniPassConfig {
   String domain;
   String protocol;
   AppSetting appSetting;
+  bool? returnEmail;
+  ConnectType? connectType;
 
   UniPassConfig({
     required this.nodeRPC,
@@ -101,5 +112,7 @@ class UniPassConfig {
     required this.domain,
     required this.protocol,
     required this.appSetting,
+    this.returnEmail,
+    this.connectType,
   });
 }

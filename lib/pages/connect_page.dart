@@ -13,11 +13,13 @@ class ConnectPage extends StatefulWidget {
     required this.connectFuture,
     required this.url,
     required this.appSetting,
+    required this.returnEmail,
   }) : super(key: key);
 
   final Completer<UpAccount> connectFuture;
   final String url;
   final AppSetting appSetting;
+  final bool returnEmail;
 
   @override
   State<ConnectPage> createState() => _ConnectPageState();
@@ -118,6 +120,9 @@ class _ConnectPageState extends State<ConnectPage> {
             "chain": widget.appSetting.chainType?.name,
             "theme": widget.appSetting.theme?.name,
           },
+          "payload": {
+            "returnEmail": widget.returnEmail,
+          }
         });
         controller.evaluateJavascript(source: """
                 window.onConnectPageReady($connectValue);
@@ -143,7 +148,7 @@ class _ConnectPageState extends State<ConnectPage> {
 
               UpAccount upAccount = UpAccount(
                 address: payload["data"]["address"],
-                email: payload["data"]["email"],
+                email: payload["data"]["email"] ?? "",
                 newborn: payload["data"]["newborn"],
               );
               if (!widget.connectFuture.isCompleted) {

@@ -39,6 +39,8 @@ class UniPassWeb {
       domain: option.domain ?? upDomain,
       protocol: option.protocol ?? "https",
       appSetting: appSetting,
+      returnEmail: option.returnEmail,
+      connectType: option.connectType,
     );
     Storage.init();
   }

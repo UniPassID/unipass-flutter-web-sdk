@@ -11,7 +11,7 @@ import 'package:unipass_web_sdk/utils/storage.dart';
 Future<UpAccount> pushConnect(BuildContext context, UniPassConfig config) async {
   UpAccount? localAccount = Storage.getUpAccount();
   if (localAccount != null) return localAccount;
-  final String url = getWalletUrl(MessageType.upConnect, config.domain, config.protocol);
+  final String url = getWalletUrl(MessageType.upConnect, config.domain, config.protocol, connectType: config.connectType);
   print("[pushConnect: $url]");
   Completer<UpAccount> completer = Completer<UpAccount>();
   Navigator.push(
@@ -21,6 +21,7 @@ Future<UpAccount> pushConnect(BuildContext context, UniPassConfig config) async 
         connectFuture: completer,
         url: url,
         appSetting: config.appSetting,
+        returnEmail: config.returnEmail ?? false,
       ),
     ),
   );

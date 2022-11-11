@@ -45,12 +45,18 @@ String getRpcUrl(Environment env, ChainType chainType) {
 
 const String upDomain = "wallet.unipass.id";
 
-String getWalletUrl(MessageType type, String? domain, String? protocol) {
+String getWalletUrl(MessageType type, String? domain, String? protocol, { ConnectType? connectType }) {
   final protocol_ = protocol ?? "https";
   final domain_ = domain ?? upDomain;
 
   switch (type) {
     case MessageType.upConnect:
+      if (connectType == ConnectType.google) {
+        return '$protocol_://$domain_/connect?connectType=google';
+      }
+      if (connectType == ConnectType.email) {
+        return '$protocol_://$domain_/connect?connectType=email';
+      }
       return '$protocol_://$domain_/connect';
     case MessageType.upSignMessage:
       return '$protocol_://$domain_/sign-message';
