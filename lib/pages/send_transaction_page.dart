@@ -35,6 +35,10 @@ class _SendTransactionPageState extends State<SendTransactionPage> {
       useShouldOverrideUrlLoading: true,
       mediaPlaybackRequiresUserGesture: false,
       applicationNameForUserAgent: "unipass_wallet_for_flutter",
+      userAgent: 'random',
+      javaScriptEnabled: true,
+      useOnLoadResource: true,
+      cacheEnabled: true,
     ),
     android: AndroidInAppWebViewOptions(
       useHybridComposition: true,
