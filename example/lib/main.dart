@@ -51,6 +51,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   UnipassTheme theme = UnipassTheme.light;
   ChainType chainType = ChainType.polygon;
+  bool returnEmail = false;
 
   String domain = "testnet.wallet.unipass.id";
 
@@ -124,6 +125,23 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Checkbox(
+              checkColor: Colors.white,
+              fillColor: MaterialStateProperty.resolveWith(getColor),
+              value: returnEmail,
+              onChanged: (bool? value) {
+                setState(() {
+                  returnEmail = value!;
+                });
+              },
+            ),
+            const Text("returnEmail"),
+          ],
+        ),
+        const SizedBox(height: 10),
         GestureDetector(
           child: Text("domain: $domain", textAlign: TextAlign.center),
           onTap: () {
@@ -146,7 +164,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.google);
+                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.google, returnEmail: returnEmail);
                 }),
               );
             },
@@ -160,7 +178,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.email);
+                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.email, returnEmail: returnEmail);
                 }),
               );
             },
@@ -176,7 +194,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType, domain: domain);
+                  return TestPage(theme: theme, chainType: chainType, domain: domain, returnEmail: returnEmail);
                 }),
               );
             },
@@ -185,5 +203,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+
+  Color getColor(Set<MaterialState> states) {
+    return Colors.blue;
   }
 }

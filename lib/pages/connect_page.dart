@@ -33,7 +33,11 @@ class _ConnectPageState extends State<ConnectPage> {
     crossPlatform: InAppWebViewOptions(
       useShouldOverrideUrlLoading: true,
       mediaPlaybackRequiresUserGesture: false,
-      applicationNameForUserAgent: "unipass_wallet_for_flutter",
+      applicationNameForUserAgent: "unipass_wallet_for_fultter",
+      userAgent: 'random',
+      javaScriptEnabled: true,
+      useOnLoadResource: true,
+      cacheEnabled: true,
     ),
     android: AndroidInAppWebViewOptions(
       useHybridComposition: true,
