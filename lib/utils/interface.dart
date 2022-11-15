@@ -24,6 +24,7 @@ enum WebViewPageType {
 enum ConnectType {
   google,
   email,
+  both,
 }
 
 /// connect success return values
@@ -90,7 +91,7 @@ class UniPassOption {
     this.protocol,
     this.appSetting,
     this.returnEmail,
-    this.connectType,
+    this.connectType = ConnectType.both,
   });
 }
 
