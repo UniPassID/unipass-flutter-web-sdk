@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
             });
             if (count == 10) {
               setState(() {
-                domain = "d.wallet.unipass.vip";
+                domain = "t.wallet.unipass.vip";
               });
             }
           },

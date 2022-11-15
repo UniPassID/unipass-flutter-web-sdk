@@ -1,5 +1,7 @@
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
 
+const unipassMessagePrefix = '\x18UniPass Signed Message:\n';
+
 class RpcUrl {
   String polygonMainnet;
   String bscMainnet;
@@ -8,8 +10,7 @@ class RpcUrl {
   String bscTestnet;
   String rangersRobin;
 
-  RpcUrl(this.polygonMainnet, this.bscMainnet, this.rangersMainnet,
-      this.polygonMumbai, this.bscTestnet, this.rangersRobin);
+  RpcUrl(this.polygonMainnet, this.bscMainnet, this.rangersMainnet, this.polygonMumbai, this.bscTestnet, this.rangersRobin);
 }
 
 RpcUrl rpcUrl = RpcUrl(

@@ -70,9 +70,16 @@ class UniPassWeb {
 
   Future<bool> isValidSignature(String message, String sig) async {
     _checkInitialized();
-    final hash_ = keccak256(Uint8List.fromList(message.codeUnits));
-    Uint8List code = await VerifySig(address: web3.EthereumAddress.fromHex(_account!.address), client: _authProvider!).isValidSignature(
-      hash_,
+    final hash_ = BytesBuilder();
+    final prefixHash = Uint8List.fromList(unipassMessagePrefix.codeUnits);
+    final messageHash = Uint8List.fromList(message.codeUnits);
+    final messageLengthHash = Uint8List.fromList(messageHash.length.toString().codeUnits);
+    hash_.add(prefixHash);
+    hash_.add(messageLengthHash);
+    hash_.add(messageHash);
+    Uint8List code =
+        await VerifySig(address: web3.EthereumAddress.fromHex(_account!.address), client: _authProvider!).isValidSignature(
+      keccak256(hash_.toBytes()),
       hexToBytes(sig),
     );
     return bytesToHex(code, include0x: true) == "0x1626ba7e";
