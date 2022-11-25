@@ -4,20 +4,25 @@ const unipassMessagePrefix = '\x18UniPass Signed Message:\n';
 
 class RpcUrl {
   String polygonMainnet;
+  String ethMainnet;
   String bscMainnet;
   String rangersMainnet;
   String polygonMumbai;
+  String ethGoerli;
   String bscTestnet;
   String rangersRobin;
 
-  RpcUrl(this.polygonMainnet, this.bscMainnet, this.rangersMainnet, this.polygonMumbai, this.bscTestnet, this.rangersRobin);
+  RpcUrl(this.polygonMainnet, this.ethMainnet, this.bscMainnet, this.rangersMainnet, this.polygonMumbai, this.bscTestnet,
+      this.ethGoerli, this.rangersRobin);
 }
 
 RpcUrl rpcUrl = RpcUrl(
   "https://node.wallet.unipass.id/polygon-mainnet",
+  "https://node.wallet.unipass.id/eth-mainnet",
   "https://node.wallet.unipass.id/bsc-mainnet",
   "https://node.wallet.unipass.id/rangers-mainnet",
   "https://node.wallet.unipass.id/polygon-mumbai",
+  "https://node.wallet.unipass.id/eth-goerli",
   "https://node.wallet.unipass.id/bsc-testnet",
   "https://node.wallet.unipass.id/rangers-robin",
 );
@@ -27,6 +32,8 @@ String getRpcUrl(Environment env, ChainType chainType) {
     switch (chainType) {
       case ChainType.polygon:
         return rpcUrl.polygonMumbai;
+      case ChainType.eth:
+        return rpcUrl.ethGoerli;
       case ChainType.bsc:
         return rpcUrl.bscTestnet;
       case ChainType.rangers:
@@ -36,6 +43,8 @@ String getRpcUrl(Environment env, ChainType chainType) {
     switch (chainType) {
       case ChainType.polygon:
         return rpcUrl.polygonMainnet;
+      case ChainType.eth:
+        return rpcUrl.ethMainnet;
       case ChainType.bsc:
         return rpcUrl.bscMainnet;
       case ChainType.rangers:
@@ -46,9 +55,9 @@ String getRpcUrl(Environment env, ChainType chainType) {
 
 const String upDomain = "wallet.unipass.id";
 
-String getWalletUrl(MessageType type, String? domain, String? protocol, { ConnectType? connectType }) {
+String getWalletUrl(MessageType type, String domain, String? protocol, { ConnectType? connectType }) {
   final protocol_ = protocol ?? "https";
-  final domain_ = domain ?? upDomain;
+  final domain_ = domain;
 
   switch (type) {
     case MessageType.upConnect:

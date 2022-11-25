@@ -2,7 +2,7 @@ import 'dart:convert';
 
 enum Environment { testnet, mainnet }
 
-enum ChainType { polygon, bsc, rangers }
+enum ChainType { polygon, eth, bsc, rangers }
 
 enum Protocol { https, http }
 
