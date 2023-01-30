@@ -1,5 +1,4 @@
 import 'package:example/erc20.g.dart';
-import 'package:example/homePage.dart';
 import 'package:example/page.dart';
 import 'package:flutter/material.dart';
 import 'package:bruno/bruno.dart';
@@ -361,7 +360,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SvgPicture.asset('images/google.svg'),
+                        SvgPicture.asset('assets/images/google.svg'),
                         const SizedBox(width: 10.0),
                         Text(
                           "Continue with Google",
@@ -384,7 +383,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SvgPicture.asset('images/email.svg'),
+                        SvgPicture.asset('assets/images/email.svg'),
                         const SizedBox(width: 10.0),
                         Text(
                           "Continue with Email",
@@ -459,7 +458,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'images/unipass.png',
+                          'assets/images/unipass.png',
                           width: 24,
                           height: 24,
                         ),

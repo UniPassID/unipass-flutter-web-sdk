@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:example/components/custom-button.dart';
 import 'package:example/components/custom-card.dart';
 import 'package:example/components/custom-input.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:unipass_web_sdk/pages/unipass_web_home_page.dart';
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
 import 'package:web3dart/web3dart.dart' as web3;
 import 'package:web3dart/crypto.dart';
@@ -22,7 +25,8 @@ const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainBackground = Color(0XFFF5F5F5);
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key,
+  const TestPage({
+    super.key,
     required this.theme,
     required this.chainType,
     required this.domain,
@@ -46,7 +50,6 @@ class TestPage extends StatefulWidget {
   final BigInt? balance;
   final BigInt? usdcBalance;
 
-
   @override
   _TestPage createState() => _TestPage();
 }
@@ -61,15 +64,23 @@ class _TestPage extends State<TestPage> {
   BigInt balance = BigInt.zero;
   BigInt usdcBalance = BigInt.zero;
 
-  String _messageController = "";
+  String _typeData =
+      '{"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"Person":[{"name":"name","type":"string"},{"name":"wallet","type":"address"}],"Mail":[{"name":"from","type":"Person"},{"name":"to","type":"Person"},{"name":"contents","type":"string"}]},"primaryType":"Mail","domain":{"name":"Ether Mail","version":"1","chainId":1,"verifyingContract":"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"},"message":{"from":{"name":"Cow","wallet":"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},"to":{"name":"Bob","wallet":"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},"contents":"Hello, Bob!"}}';
+  String _sendMessage =
+      '{"from":{"name":"Cow","wallet":"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},"to":{"name":"Bob","wallet":"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},"contents":"Hello, Bob!"}';
+  String _messageController = 'Welcome to UniPass!';
   String _sigController = "";
   String _verifyMessageController = "";
   String _transactionController = "";
   String _transactionErc20Controller = "";
-  String? _addressController = "";
+  String _addressController = "";
   String _toErc20Controller = "";
 
   late UniPassWeb uniPassWeb;
+
+  initPage() async {
+    UpAccount upAccount = await uniPassWeb.connect(context);
+  }
 
   @override
   void initState() {
@@ -88,7 +99,8 @@ class _TestPage extends State<TestPage> {
         connectType: widget.connectType,
       ),
     );
-    _addressController = widget.address;
+    initPage();
+    _addressController = widget.address!;
     _toErc20Controller = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
   }
 
@@ -119,174 +131,265 @@ class _TestPage extends State<TestPage> {
             const SizedBox(height: 40.0),
             CustomCard(
                 child: Column(
-                  children: [
-                    CustomButton(
-                        onPressed: () {}, title: 'Continue with Google'),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Your address 2',
-                      enabled: false,
-                      controller: widget.address,
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Your email',
-                      enabled: false,
-                      controller: widget.email,
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'New born',
-                      enabled: false,
-                      controller: widget.newborn.toString(),
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                        onPressed: () async {
-                          await uniPassWeb.logout();
-                          setState(() {
-                            accountString = "";
-                            signedMessage = "";
-                            transactionHash = "";
-                            erc20TransactionHash = "";
-                            isValidSignature = "";
-                            _messageController = "";
-                            _sigController = "";
-                            _verifyMessageController = "";
-                            _transactionController = "";
-                            _transactionErc20Controller = "";
-                            _addressController = "";
-                            // _toErc20Controller.text = "";
-                            balance = BigInt.zero;
-                            usdcBalance = BigInt.zero;
-                          });
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MyApp()),
-                          );
-                        },
-                        title: 'Disconnect'),
-                  ],
-                )),
+              children: [
+                CustomButton(
+                    onPressed: () {
+                      var url = 'https://testnet.wallet.unipass.id/';
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UnipassWebHomePage(
+                            url: url,
+                          ),
+                        ),
+                      );
+                    },
+                    title: 'Open Wallet'),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Your address',
+                  enabled: false,
+                  controller: widget.address,
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Your email',
+                  enabled: false,
+                  controller: widget.email,
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'New born',
+                  enabled: false,
+                  controller: widget.newborn.toString(),
+                ),
+                const SizedBox(height: 40.0),
+                CustomButton(
+                    onPressed: () async {
+                      await uniPassWeb.logout();
+                      setState(() {
+                        accountString = "";
+                        signedMessage = "";
+                        transactionHash = "";
+                        erc20TransactionHash = "";
+                        isValidSignature = "";
+                        _typeData = "";
+                        _sigController = "";
+                        _verifyMessageController = "";
+                        _transactionController = "";
+                        _transactionErc20Controller = "";
+                        _addressController = "";
+                        // _toErc20Controller.text = "";
+                        balance = BigInt.zero;
+                        usdcBalance = BigInt.zero;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyApp()),
+                      );
+                    },
+                    title: 'Disconnect'),
+              ],
+            )),
             CustomCard(
                 child: Column(
-                  children: [
-                    const Text(
-                      'Send ETH',
-                      style: TextStyle(
-                          color: _primaryTextColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomInput(
-                      title: 'Your balance',
-                      enabled: false,
-                      controller: widget.balance.toString(),
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Transfer to',
-                      controller: widget.address,
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Amount',
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(onPressed: () {}, title: 'Send'),
-                  ],
-                )),
-            CustomCard(
-                child: Column(
-                  children: [
-                    const Text(
-                      'Send ERC20',
-                      style: TextStyle(
-                          color: _primaryTextColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomInput(
-                      title: 'Your balance',
-                      enabled: false,
-                      controller: widget.usdcBalance.toString(),
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Transfer to',
-                      controller: widget.address,
-                    ),
-                    const SizedBox(height: 20.0),
-                    CustomInput(
-                      title: 'Amount',
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(onPressed: () {}, title: 'Send'),
-                  ],
-                )),
-            CustomCard(
-                child: Column(
-                  children: [
-                    const Text(
-                      'Sign Message',
-                      style: TextStyle(
-                          color: _primaryTextColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomInput(
-                      title: 'Message',
-                      controller: "Welcome to UniPass!",
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(onPressed: () {}, title: 'Sign Message'),
-                  ],
-                )),
-            CustomCard(
-                child: Column(
-                  children: [
-                    const Text(
-                      'Sign Typed Data V4',
-                      style: TextStyle(
-                          color: _primaryTextColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 40.0),
-                    JsonView.string(
-                      '{"AccountPending":"Wallet is recovering...","AccountStatus":"Wallet Status:","ActionNotCommitted":"There is a pending action, are you sure you want to exit?","Add":"Add guardians","AddGuardian":"Add Guardian Email","AddGuardianFailed":"Add Guardian Email Failed","AddSuccess":"Add success","AmountOutOfRange":"Your balance is insufficient, the transfer amount will be changed","ApprovalTo":"Approval to","BackToHome":"Return to homepage","Balance":"Balance","Cancel":"Cancel","CastingSuccess":"Verification successful!"}',
-                      theme: const JsonViewTheme(
-                        keyStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        doubleStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                        intStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                        stringStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                        boolStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+              children: [
+                const Text(
+                  'Send ETH',
+                  style: TextStyle(
+                      color: _primaryTextColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 40.0),
+                CustomInput(
+                  title: 'Your balance',
+                  enabled: false,
+                  controller: '${widget.balance.toString()} ${_formatNativeTokenName(widget.chainType)}',
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Transfer to',
+                  controller: widget.address,
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Amount',
+                  controller: _transactionController,
+                ),
+                const SizedBox(height: 40.0),
+                CustomButton(onPressed: () async {
+                  if (widget.balance == BigInt.zero) {
+                    _showToast("balance is zero");
+                    return;
+                  }
+                  if (_transactionController.isEmpty || _addressController.isEmpty) {
+                    _showToast("input is empty");
+                    return;
+                  }
+                  try {
+                    String txHash = await uniPassWeb.sendTransaction(
+                      context,
+                      TransactionMessage(
+                        from: uniPassWeb.getAddress(),
+                        to: _addressController,
+                        value: etherToWei(_transactionController, decimal: 18),
+                        data: "0x",
                       ),
+                    );
+                    setState(() {
+                      transactionHash = txHash;
+                    });
+                  } catch (err) {
+                    setState(() {
+                      transactionHash = err.toString();
+                    });
+                  }
+                }, title: 'Send'),
+              ],
+            )),
+            CustomCard(
+                child: Column(
+              children: [
+                const Text(
+                  'Send ERC20',
+                  style: TextStyle(
+                      color: _primaryTextColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 40.0),
+                CustomInput(
+                  title: 'Your balance',
+                  enabled: false,
+                  controller: '${widget.usdcBalance.toString()} USDC',
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Transfer to',
+                  controller: widget.address,
+                ),
+                const SizedBox(height: 20.0),
+                CustomInput(
+                  title: 'Amount',
+                  controller: _transactionErc20Controller,
+                ),
+                const SizedBox(height: 40.0),
+                CustomButton(onPressed: () async {
+
+                  if (usdcBalance == BigInt.zero) {
+                    _showToast("usdc balance is zero");
+                    return;
+                  }
+                  if (_transactionErc20Controller.isEmpty || _toErc20Controller.isEmpty) {
+                    _showToast("input is empty");
+                    return;
+                  }
+                  try {
+                    final erc20TokenData = Erc20(
+                      address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)),
+                      client: uniPassWeb.getProvider(),
+                    ).self.function("transfer").encodeCall(
+                      [
+                        web3.EthereumAddress.fromHex(_toErc20Controller),
+                        etherToWei(_transactionErc20Controller, decimal: _formatUsdcDecimal(widget.chainType), toString: false),
+                      ],
+                    );
+
+                    String txHash = await uniPassWeb.sendTransaction(
+                      context,
+                      TransactionMessage(
+                        from: uniPassWeb.getAddress(),
+                        to: _formatUsdcAddress(widget.chainType),
+                        value: "0x",
+                        data: bytesToHex(erc20TokenData, include0x: true),
+                      ),
+                    );
+                    setState(() {
+                      erc20TransactionHash = txHash;
+                    });
+                  } catch (err, s) {
+                    print(err);
+                    print(s);
+                    setState(() {
+                      erc20TransactionHash = err.toString();
+                    });
+                  }
+                }, title: 'Send'),
+              ],
+            )),
+            CustomCard(
+                child: Column(
+              children: [
+                const Text(
+                  'Sign Message',
+                  style: TextStyle(
+                      color: _primaryTextColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 40.0),
+                CustomInput(
+                  title: 'Message',
+                  controller: _messageController,
+                ),
+                const SizedBox(height: 40.0),
+                CustomButton(
+                    onPressed: () async {
+                      await uniPassWeb.signMessage(context, _messageController);
+                    },
+                    title: 'Sign Message'),
+              ],
+            )),
+            CustomCard(
+                child: Column(
+              children: [
+                const Text(
+                  'Sign Typed Data V4',
+                  style: TextStyle(
+                      color: _primaryTextColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 40.0),
+                JsonView.string(
+                  _typeData,
+                  theme: const JsonViewTheme(
+                    keyStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(onPressed: () {}, title: 'Sign Typed Data'),
-                  ],
-                )),
+                    doubleStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    intStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    stringStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    boolStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40.0),
+                CustomButton(
+                    onPressed: () async {
+                      String signedMessage_ =
+                          await uniPassWeb.signMessage(context, _sendMessage);
+                      setState(() {
+                        signedMessage = signedMessage_;
+                      });
+                    },
+                    title: 'Sign Typed Data'),
+              ],
+            )),
           ],
         ),
       ),
