@@ -77,17 +77,17 @@ class _MyPageState extends State {
                     },
                     title: 'Continue with Google'),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Your address',
                   enabled: false,
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Your email',
                   enabled: false,
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'New born',
                   enabled: false,
                 ),
@@ -106,16 +106,16 @@ class _MyPageState extends State {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Your balance',
                   enabled: false,
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Transfer to',
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Amount',
                 ),
                 const SizedBox(height: 40.0),
@@ -133,16 +133,16 @@ class _MyPageState extends State {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Your balance',
                   enabled: false,
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Transfer to',
                 ),
                 const SizedBox(height: 20.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Amount',
                 ),
                 const SizedBox(height: 40.0),
@@ -160,7 +160,7 @@ class _MyPageState extends State {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40.0),
-                const CustomInput(
+                CustomInput(
                   title: 'Message',
                 ),
                 const SizedBox(height: 40.0),

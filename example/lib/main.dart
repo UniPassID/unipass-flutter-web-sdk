@@ -1,3 +1,4 @@
+import 'package:example/erc20.g.dart';
 import 'package:example/homePage.dart';
 import 'package:example/page.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unipass_web_sdk/utils/interface.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
+import 'package:web3dart/web3dart.dart' as web3;
 
 void main() {
   runApp(const MyApp());
@@ -69,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
   UnipassTheme theme = UnipassTheme.light;
   ChainType chainType = ChainType.polygon;
   bool returnEmail = false;
-
   bool _isDark = true;
   bool returnAddress = true;
   var chainList = const [
@@ -91,8 +92,91 @@ class _MyHomePageState extends State<MyHomePage> {
     },
   ];
   var chain = "polygon";
+  String accountString = "";
+  String signedMessage = "";
+  String transactionHash = "";
+  String erc20TransactionHash = "";
+  String isValidSignature = "";
+  String connectType = "";
 
   String domain = "testnet.wallet.unipass.id";
+  late UniPassWeb uniPassWeb;
+  final TextEditingController _toController = TextEditingController();
+  final TextEditingController _toErc20Controller = TextEditingController();
+
+  String _formatUsdcAddress(ChainType chainType) {
+    if (chainType == ChainType.polygon) return polygonUsdcAddress;
+    if (chainType == ChainType.bsc) return bscUsdcAddress;
+    if (chainType == ChainType.rangers) return rangersUsdcAddress;
+    return "";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print('current domain: ${domain}');
+
+    _toController.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
+    _toErc20Controller.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
+  }
+
+  loginUnipass(connectType) async {
+    uniPassWeb = UniPassWeb(
+      UniPassOption(
+        domain: domain,
+        protocol: "https",
+        appSetting: AppSetting(
+          appName: "demo dapp",
+          theme: theme,
+          chainType: chainType,
+        ),
+        returnEmail: returnEmail,
+        connectType: connectType,
+      ),
+    );
+    try {
+      UpAccount upAccount = await uniPassWeb.connect(context);
+      setState(() {
+        accountString =
+            "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn}";
+      });
+      web3.Web3Client client = uniPassWeb.getProvider();
+
+      web3.EthereumAddress address =
+          web3.EthereumAddress.fromHex(uniPassWeb.getAddress());
+      web3.EtherAmount balance_ = await client.getBalance(address);
+
+      Erc20 contract = Erc20(
+          address: web3.EthereumAddress.fromHex(_formatUsdcAddress(chainType)),
+          client: client);
+      BigInt usdcBalance_ = await contract.balanceOf(address);
+
+      print("${chainType.name} balance: ${balance_.getInWei.toString()}");
+      print("usdcBalance: ${usdcBalance_.toString()}");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) {
+          return TestPage(
+            theme: theme,
+            chainType: chainType,
+            domain: domain,
+            connectType: connectType,
+            newborn: upAccount.newborn,
+            address: upAccount.address,
+            email: upAccount.email,
+            balance: balance_.getInWei,
+            usdcBalance: usdcBalance_,
+          );
+        }),
+      );
+    } catch (err, s) {
+      print(s);
+      setState(() {
+        accountString = err.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,12 +269,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         items: chainList
                             .map<DropdownMenuItem<String>>(
                                 (Map item) => DropdownMenuItem<String>(
-                                value: item['value'],
-                                // add this property an pass the _value to it
-                                child: Text(
-                                  item['label'],
-                                  // style: const TextStyle(),
-                                )))
+                                    value: item['value'],
+                                    // add this property an pass the _value to it
+                                    child: Text(
+                                      item['label'],
+                                      // style: const TextStyle(),
+                                    )))
                             .toList(),
                       ),
                     ),
@@ -272,18 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   MaterialButton(
                     onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return TestPage(
-                              theme: theme,
-                              chainType: chainType,
-                              domain: domain,
-                              connectType: ConnectType.google,
-                              returnEmail: returnEmail
-                          );
-                        }),
-                      );
+                      loginUnipass(ConnectType.google);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -306,18 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   MaterialButton(
                     onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return TestPage(
-                              theme: theme,
-                              chainType: chainType,
-                              domain: domain,
-                              connectType: ConnectType.email,
-                              returnEmail: returnEmail
-                          );
-                        }),
-                      );
+                      loginUnipass(ConnectType.email);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -379,14 +441,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   MaterialButton(
                     onPressed: () async {
+                      // loginUnipass(ConnectType.both);
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
                           return TestPage(
-                              theme: theme,
-                              chainType: chainType,
-                              domain: domain,
-                              returnEmail: returnEmail
+                            theme: theme,
+                            chainType: chainType,
+                            domain: domain,
+                            connectType: ConnectType.email,
+                            returnEmail: returnEmail,
                           );
                         }),
                       );

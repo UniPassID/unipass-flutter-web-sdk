@@ -1,5 +1,10 @@
+import 'package:example/components/custom-button.dart';
+import 'package:example/components/custom-card.dart';
+import 'package:example/components/custom-input.dart';
+import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
 import 'package:web3dart/web3dart.dart' as web3;
@@ -13,18 +18,37 @@ const rangersUsdcAddress = "0xd6ed1c13914ff1b08737b29de4039f542162cae1";
 const polygonUsdcDecimal = 6;
 const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
+const Color _primaryTextColor = Color(0xFF1F202A);
+const Color _mainBackground = Color(0XFFF5F5F5);
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key, required this.theme, required this.chainType, required this.domain, this.connectType, this.returnEmail = false});
+  const TestPage({super.key,
+    required this.theme,
+    required this.chainType,
+    required this.domain,
+    this.connectType,
+    this.returnEmail = false,
+    this.address,
+    this.email,
+    this.newborn,
+    this.balance,
+    this.usdcBalance,
+  });
 
   final String domain;
   final UnipassTheme theme;
   final ChainType chainType;
   final ConnectType? connectType;
   final bool? returnEmail;
+  final bool? newborn;
+  final String? address;
+  final String? email;
+  final BigInt? balance;
+  final BigInt? usdcBalance;
+
 
   @override
-  State<TestPage> createState() => _TestPage();
+  _TestPage createState() => _TestPage();
 }
 
 class _TestPage extends State<TestPage> {
@@ -37,13 +61,13 @@ class _TestPage extends State<TestPage> {
   BigInt balance = BigInt.zero;
   BigInt usdcBalance = BigInt.zero;
 
-  final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _sigController = TextEditingController();
-  final TextEditingController _verifyMessageController = TextEditingController();
-  final TextEditingController _transactionController = TextEditingController();
-  final TextEditingController _transactionErc20Controller = TextEditingController();
-  final TextEditingController _toController = TextEditingController();
-  final TextEditingController _toErc20Controller = TextEditingController();
+  String _messageController = "";
+  String _sigController = "";
+  String _verifyMessageController = "";
+  String _transactionController = "";
+  String _transactionErc20Controller = "";
+  String? _addressController = "";
+  String _toErc20Controller = "";
 
   late UniPassWeb uniPassWeb;
 
@@ -64,368 +88,208 @@ class _TestPage extends State<TestPage> {
         connectType: widget.connectType,
       ),
     );
-    _toController.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
-    _toErc20Controller.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
+    _addressController = widget.address;
+    _toErc20Controller = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        const SizedBox(height: 20),
-        const Text(
-          "Unipass flutter web sdk",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 24),
+    return Scaffold(
+      backgroundColor: _mainBackground,
+      appBar: AppBar(
+        title: Text('demo'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 32.0,
         ),
-        const SizedBox(height: 20),
-        const Divider(color: Colors.blueAccent, thickness: 3.0),
-        const SizedBox(height: 10),
-        Column(
+        child: ListBody(
           children: [
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  UpAccount upAccount = await uniPassWeb.connect(context);
-                  setState(() {
-                    accountString = "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn}";
-                  });
-                  web3.Web3Client client = uniPassWeb.getProvider();
-                  web3.EthereumAddress address = web3.EthereumAddress.fromHex(uniPassWeb.getAddress());
-                  web3.EtherAmount balance_ = await client.getBalance(address);
-
-                  Erc20 contract = Erc20(address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)), client: client);
-                  BigInt usdcBalance_ = await contract.balanceOf(address);
-
-                  print("${widget.chainType.name} balance: ${balance_.getInWei.toString()}");
-                  print("usdcBalance: ${usdcBalance_.toString()}");
-                  setState(() {
-                    balance = balance_.getInWei;
-                    usdcBalance = usdcBalance_;
-                  });
-                } catch (err, s) {
-                  print(s);
-                  setState(() {
-                    accountString = err.toString();
-                  });
-                }
-              },
-              child: const Text("connect"),
-            ),
-            Text(
-              "[account] \n $accountString",
+            //
+            const Text(
+              'UniPass Demo (Polygon-mumbai)',
               textAlign: TextAlign.center,
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  await Clipboard.setData(ClipboardData(text: accountString));
-                } catch (err) {}
-              },
-              child: const Text("copy account"),
-            ),
-          ],
-        ),
-        const Divider(color: Colors.blueAccent, thickness: 3.0),
-        const SizedBox(height: 30),
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: TextFormField(
-                controller: _messageController,
-                decoration: const InputDecoration(
-                  labelText: 'message',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: TextInputType.text,
+              style: TextStyle(
+                color: _primaryTextColor,
+                fontSize: 28,
               ),
             ),
-            const SizedBox(height: 20),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  if (_messageController.text.isEmpty) {
-                    _showToast("sign message is empty");
-                    return;
-                  }
-                  String signedMessage_ = await uniPassWeb.signMessage(context, _messageController.text);
-                  setState(() {
-                    signedMessage = signedMessage_;
-                  });
-                } catch (err) {
-                  setState(() {
-                    signedMessage = err.toString();
-                  });
-                }
-              },
-              child: const Text("sign message"),
-            ),
-            Text(
-              "sig: $signedMessage",
-              textAlign: TextAlign.center,
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  await Clipboard.setData(ClipboardData(text: signedMessage));
-                } catch (err) {}
-              },
-              child: const Text("copy sig"),
-            ),
-          ],
-        ),
-        const Divider(color: Colors.blueAccent, thickness: 3.0),
-        const SizedBox(height: 30),
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: TextFormField(
-                controller: _sigController,
-                decoration: const InputDecoration(
-                  labelText: 'sig',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                minLines: 4,
-                maxLines: 10,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: TextFormField(
-                controller: _verifyMessageController,
-                decoration: const InputDecoration(
-                  labelText: 'message',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  if (_sigController.text.isEmpty || _verifyMessageController.text.isEmpty) {
-                    _showToast("input is empty");
-                    return;
-                  }
-                  bool isValid = await uniPassWeb.isValidSignature(_verifyMessageController.text, _sigController.text);
-                  setState(() {
-                    isValidSignature = isValid.toString();
-                  });
-                } catch (err, s) {
-                  print(s);
-                  setState(() {
-                    isValidSignature = err.toString();
-                  });
-                }
-              },
-              child: const Text("verify message"),
-            ),
-            Text(
-              "isValidSignature: $isValidSignature",
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        const Divider(color: Colors.blueAccent, thickness: 3.0),
-        const SizedBox(height: 30),
-        Column(
-          children: [
-            Text("${_formatNativeTokenName(widget.chainType)} balance: ${(balance / BigInt.from(10).pow(18)).toString()}"),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: TextFormField(
-                controller: _transactionController,
-                decoration: const InputDecoration(
-                  labelText: 'value',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextFormField(
-                controller: _toController,
-                decoration: const InputDecoration(
-                  labelText: 'to',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                if (balance == BigInt.zero) {
-                  _showToast("balance is zero");
-                  return;
-                }
-                if (_transactionController.text.isEmpty || _toController.text.isEmpty) {
-                  _showToast("input is empty");
-                  return;
-                }
-                try {
-                  String txHash = await uniPassWeb.sendTransaction(
-                    context,
-                    TransactionMessage(
-                      from: uniPassWeb.getAddress(),
-                      to: _toController.text,
-                      value: etherToWei(_transactionController.text, decimal: 18),
-                      data: "0x",
+            const SizedBox(height: 40.0),
+            CustomCard(
+                child: Column(
+                  children: [
+                    CustomButton(
+                        onPressed: () {}, title: 'Continue with Google'),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Your address 2',
+                      enabled: false,
+                      controller: widget.address,
                     ),
-                  );
-                  setState(() {
-                    transactionHash = txHash;
-                  });
-                } catch (err) {
-                  setState(() {
-                    transactionHash = err.toString();
-                  });
-                }
-              },
-              child: const Text("send transaction"),
-            ),
-            Text(
-              "txHash: $transactionHash",
-              textAlign: TextAlign.center,
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  await Clipboard.setData(ClipboardData(text: transactionHash));
-                } catch (err) {}
-              },
-              child: const Text("copy hash"),
-            ),
-          ],
-        ),
-        const SizedBox(height: 30),
-        Column(
-          children: [
-            Text("USDC balance: ${(usdcBalance / BigInt.from(10).pow(widget.chainType == ChainType.bsc ? 18 : 6)).toString()}"),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: TextFormField(
-                controller: _transactionErc20Controller,
-                decoration: const InputDecoration(
-                  labelText: 'value',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextFormField(
-                controller: _toErc20Controller,
-                decoration: const InputDecoration(
-                  labelText: 'to',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: false,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                if (usdcBalance == BigInt.zero) {
-                  _showToast("usdc balance is zero");
-                  return;
-                }
-                if (_transactionErc20Controller.text.isEmpty || _toErc20Controller.text.isEmpty) {
-                  _showToast("input is empty");
-                  return;
-                }
-                try {
-                  final erc20TokenData = Erc20(
-                    address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)),
-                    client: uniPassWeb.getProvider(),
-                  ).self.function("transfer").encodeCall(
-                    [
-                      web3.EthereumAddress.fromHex(_toErc20Controller.text),
-                      etherToWei(_transactionErc20Controller.text, decimal: _formatUsdcDecimal(widget.chainType), toString: false),
-                    ],
-                  );
-
-                  String txHash = await uniPassWeb.sendTransaction(
-                    context,
-                    TransactionMessage(
-                      from: uniPassWeb.getAddress(),
-                      to: _formatUsdcAddress(widget.chainType),
-                      value: "0x",
-                      data: bytesToHex(erc20TokenData, include0x: true),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Your email',
+                      enabled: false,
+                      controller: widget.email,
                     ),
-                  );
-                  setState(() {
-                    erc20TransactionHash = txHash;
-                  });
-                } catch (err, s) {
-                  print(err);
-                  print(s);
-                  setState(() {
-                    erc20TransactionHash = err.toString();
-                  });
-                }
-              },
-              child: const Text("send USDC transaction"),
-            ),
-            Text(
-              "txHash: $erc20TransactionHash",
-              textAlign: TextAlign.center,
-            ),
-            OutlinedButton(
-              onPressed: () async {
-                try {
-                  await Clipboard.setData(ClipboardData(text: erc20TransactionHash));
-                } catch (err) {}
-              },
-              child: const Text("copy hash"),
-            ),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'New born',
+                      enabled: false,
+                      controller: widget.newborn.toString(),
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(
+                        onPressed: () async {
+                          await uniPassWeb.logout();
+                          setState(() {
+                            accountString = "";
+                            signedMessage = "";
+                            transactionHash = "";
+                            erc20TransactionHash = "";
+                            isValidSignature = "";
+                            _messageController = "";
+                            _sigController = "";
+                            _verifyMessageController = "";
+                            _transactionController = "";
+                            _transactionErc20Controller = "";
+                            _addressController = "";
+                            // _toErc20Controller.text = "";
+                            balance = BigInt.zero;
+                            usdcBalance = BigInt.zero;
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyApp()),
+                          );
+                        },
+                        title: 'Disconnect'),
+                  ],
+                )),
+            CustomCard(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Send ETH',
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Your balance',
+                      enabled: false,
+                      controller: widget.balance.toString(),
+                    ),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Transfer to',
+                      controller: widget.address,
+                    ),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Amount',
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(onPressed: () {}, title: 'Send'),
+                  ],
+                )),
+            CustomCard(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Send ERC20',
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Your balance',
+                      enabled: false,
+                      controller: widget.usdcBalance.toString(),
+                    ),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Transfer to',
+                      controller: widget.address,
+                    ),
+                    const SizedBox(height: 20.0),
+                    CustomInput(
+                      title: 'Amount',
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(onPressed: () {}, title: 'Send'),
+                  ],
+                )),
+            CustomCard(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Sign Message',
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Message',
+                      controller: "Welcome to UniPass!",
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(onPressed: () {}, title: 'Sign Message'),
+                  ],
+                )),
+            CustomCard(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Sign Typed Data V4',
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 40.0),
+                    JsonView.string(
+                      '{"AccountPending":"Wallet is recovering...","AccountStatus":"Wallet Status:","ActionNotCommitted":"There is a pending action, are you sure you want to exit?","Add":"Add guardians","AddGuardian":"Add Guardian Email","AddGuardianFailed":"Add Guardian Email Failed","AddSuccess":"Add success","AmountOutOfRange":"Your balance is insufficient, the transfer amount will be changed","ApprovalTo":"Approval to","BackToHome":"Return to homepage","Balance":"Balance","Cancel":"Cancel","CastingSuccess":"Verification successful!"}',
+                      theme: const JsonViewTheme(
+                        keyStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        doubleStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        intStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        stringStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        boolStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(onPressed: () {}, title: 'Sign Typed Data'),
+                  ],
+                )),
           ],
         ),
-        const Divider(color: Colors.blueAccent, thickness: 3.0),
-        const SizedBox(height: 30),
-        Align(
-          child: ElevatedButton.icon(
-            label: const Text("Logout"),
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await uniPassWeb.logout();
-              setState(() {
-                accountString = "";
-                signedMessage = "";
-                transactionHash = "";
-                erc20TransactionHash = "";
-                isValidSignature = "";
-                _messageController.text = "";
-                _sigController.text = "";
-                _verifyMessageController.text = "";
-                _transactionController.text = "";
-                _transactionErc20Controller.text = "";
-                // _toController.text = "";
-                // _toErc20Controller.text = "";
-                balance = BigInt.zero;
-                usdcBalance = BigInt.zero;
-              });
-            },
-          ),
-        ),
-        const SizedBox(height: 50),
-      ],
+      ),
     );
   }
 

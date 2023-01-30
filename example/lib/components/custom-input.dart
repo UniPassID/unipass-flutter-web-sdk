@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 
 const Color _primaryTextColor = Color(0xFF1F202A);
-const Color _mainTextColor = Color(0xFF8864FF);
-const Color _colorWhite = Color(0xFFFFFFFF);
-const Color _lineBackground = Color(0XFFe5e5e5);
 const Color _mainBackground = Color(0XFFF5F5F5);
 
-class CustomInput extends StatelessWidget {
-  const CustomInput({Key? key, this.onTab, this.enabled = true, required this.title})
+class CustomInput extends StatefulWidget {
+  CustomInput({Key? key,
+    this.onTab,
+    this.enabled = true,
+    this.controller = "",
+    required this.title, })
       : super(key: key);
 
   final String title;
+  final String? controller;
   final bool? enabled;
   final GestureTapCallback? onTab;
+  @override
+  _CustomInput createState() => _CustomInput();
+}
+
+class _CustomInput extends State<CustomInput> {
+  var textController= new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = widget.controller!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +34,7 @@ class CustomInput extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
+          widget.title,
           style: const TextStyle(
               color: _primaryTextColor,
               fontSize: 14,
@@ -30,12 +44,16 @@ class CustomInput extends StatelessWidget {
         Container(
           padding: const EdgeInsets.only(left: 16.0, right: 16.0),
           decoration: BoxDecoration(
-              color: (enabled != null && enabled == true) ? Colors.white : _mainBackground,
+              color: (widget.enabled != null && widget.enabled == true)
+                  ? Colors.white
+                  : _mainBackground,
               borderRadius: BorderRadius.circular(6.0),
               border: Border.all(color: Color(0XFFe4e7ed), width: 1)),
           child: TextField(
-            autofocus: true,
-            enabled: enabled,
+            controller: textController,
+            autofocus: false,
+            enabled: widget.enabled,
+            keyboardType: TextInputType.text,
             decoration: const InputDecoration(
               border: InputBorder.none,
               labelStyle: TextStyle(
