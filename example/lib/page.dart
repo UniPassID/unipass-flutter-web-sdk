@@ -61,9 +61,6 @@ class _TestPage extends State<TestPage> {
   String erc20TransactionHash = "";
   String isValidSignature = "";
 
-  BigInt balance = BigInt.zero;
-  BigInt usdcBalance = BigInt.zero;
-
   String _typeData =
       '{"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"Person":[{"name":"name","type":"string"},{"name":"wallet","type":"address"}],"Mail":[{"name":"from","type":"Person"},{"name":"to","type":"Person"},{"name":"contents","type":"string"}]},"primaryType":"Mail","domain":{"name":"Ether Mail","version":"1","chainId":1,"verifyingContract":"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"},"message":{"from":{"name":"Cow","wallet":"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},"to":{"name":"Bob","wallet":"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},"contents":"Hello, Bob!"}}';
   String _sendMessage =
@@ -100,7 +97,7 @@ class _TestPage extends State<TestPage> {
       ),
     );
     initPage();
-    _addressController = widget.address!;
+    _addressController = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
     _toErc20Controller = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
   }
 
@@ -179,9 +176,7 @@ class _TestPage extends State<TestPage> {
                         _transactionController = "";
                         _transactionErc20Controller = "";
                         _addressController = "";
-                        // _toErc20Controller.text = "";
-                        balance = BigInt.zero;
-                        usdcBalance = BigInt.zero;
+                        _toErc20Controller = "";
                       });
                       Navigator.push(
                         context,
@@ -205,47 +200,54 @@ class _TestPage extends State<TestPage> {
                 CustomInput(
                   title: 'Your balance',
                   enabled: false,
-                  controller: '${widget.balance.toString()} ${_formatNativeTokenName(widget.chainType)}',
+                  controller: '${(widget.balance! / BigInt.from(10).pow(18)).toString()} ${_formatNativeTokenName(widget.chainType)}',
                 ),
                 const SizedBox(height: 20.0),
                 CustomInput(
                   title: 'Transfer to',
-                  controller: widget.address,
+                  controller: _addressController,
                 ),
                 const SizedBox(height: 20.0),
                 CustomInput(
                   title: 'Amount',
                   controller: _transactionController,
+                  onChanged: (v) {
+                    _transactionController = v;
+                  },
                 ),
                 const SizedBox(height: 40.0),
-                CustomButton(onPressed: () async {
-                  if (widget.balance == BigInt.zero) {
-                    _showToast("balance is zero");
-                    return;
-                  }
-                  if (_transactionController.isEmpty || _addressController.isEmpty) {
-                    _showToast("input is empty");
-                    return;
-                  }
-                  try {
-                    String txHash = await uniPassWeb.sendTransaction(
-                      context,
-                      TransactionMessage(
-                        from: uniPassWeb.getAddress(),
-                        to: _addressController,
-                        value: etherToWei(_transactionController, decimal: 18),
-                        data: "0x",
-                      ),
-                    );
-                    setState(() {
-                      transactionHash = txHash;
-                    });
-                  } catch (err) {
-                    setState(() {
-                      transactionHash = err.toString();
-                    });
-                  }
-                }, title: 'Send'),
+                CustomButton(
+                    onPressed: () async {
+                      if (widget.balance == BigInt.zero) {
+                        _showToast("balance is zero");
+                        return;
+                      }
+                      if (_transactionController.isEmpty ||
+                          _addressController.isEmpty) {
+                        _showToast("input is empty");
+                        return;
+                      }
+                      try {
+                        String txHash = await uniPassWeb.sendTransaction(
+                          context,
+                          TransactionMessage(
+                            from: uniPassWeb.getAddress(),
+                            to: _addressController,
+                            value:
+                                etherToWei(_transactionController, decimal: 18),
+                            data: "0x",
+                          ),
+                        );
+                        setState(() {
+                          transactionHash = txHash;
+                        });
+                      } catch (err) {
+                        setState(() {
+                          transactionHash = err.toString();
+                        });
+                      }
+                    },
+                    title: 'Send'),
               ],
             )),
             CustomCard(
@@ -262,60 +264,68 @@ class _TestPage extends State<TestPage> {
                 CustomInput(
                   title: 'Your balance',
                   enabled: false,
-                  controller: '${widget.usdcBalance.toString()} USDC',
+                  controller: '${(widget.usdcBalance! / BigInt.from(10).pow(widget.chainType == ChainType.bsc ? 18 : 6)).toString()} USDC',
                 ),
                 const SizedBox(height: 20.0),
                 CustomInput(
                   title: 'Transfer to',
-                  controller: widget.address,
+                  controller: _toErc20Controller,
                 ),
                 const SizedBox(height: 20.0),
                 CustomInput(
                   title: 'Amount',
                   controller: _transactionErc20Controller,
+                  onChanged: (v) {
+                    _transactionErc20Controller = v;
+                  },
                 ),
                 const SizedBox(height: 40.0),
-                CustomButton(onPressed: () async {
+                CustomButton(
+                    onPressed: () async {
+                      if (widget.usdcBalance == BigInt.zero) {
+                        _showToast("usdc balance is zero");
+                        return;
+                      }
+                      if (_transactionErc20Controller.isEmpty ||
+                          _toErc20Controller.isEmpty) {
+                        _showToast("input is empty");
+                        return;
+                      }
+                      try {
+                        final erc20TokenData = Erc20(
+                          address: web3.EthereumAddress.fromHex(
+                              _formatUsdcAddress(widget.chainType)),
+                          client: uniPassWeb.getProvider(),
+                        ).self.function("transfer").encodeCall(
+                          [
+                            web3.EthereumAddress.fromHex(_toErc20Controller),
+                            etherToWei(_transactionErc20Controller,
+                                decimal: _formatUsdcDecimal(widget.chainType),
+                                toString: false),
+                          ],
+                        );
 
-                  if (usdcBalance == BigInt.zero) {
-                    _showToast("usdc balance is zero");
-                    return;
-                  }
-                  if (_transactionErc20Controller.isEmpty || _toErc20Controller.isEmpty) {
-                    _showToast("input is empty");
-                    return;
-                  }
-                  try {
-                    final erc20TokenData = Erc20(
-                      address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)),
-                      client: uniPassWeb.getProvider(),
-                    ).self.function("transfer").encodeCall(
-                      [
-                        web3.EthereumAddress.fromHex(_toErc20Controller),
-                        etherToWei(_transactionErc20Controller, decimal: _formatUsdcDecimal(widget.chainType), toString: false),
-                      ],
-                    );
-
-                    String txHash = await uniPassWeb.sendTransaction(
-                      context,
-                      TransactionMessage(
-                        from: uniPassWeb.getAddress(),
-                        to: _formatUsdcAddress(widget.chainType),
-                        value: "0x",
-                        data: bytesToHex(erc20TokenData, include0x: true),
-                      ),
-                    );
-                    setState(() {
-                      erc20TransactionHash = txHash;
-                    });
-                  } catch (err, s) {
-                    print(err);
-                    print(s);
-                    setState(() {
-                      erc20TransactionHash = err.toString();
-                    });
-                  }
-                }, title: 'Send'),
+                        String txHash = await uniPassWeb.sendTransaction(
+                          context,
+                          TransactionMessage(
+                            from: uniPassWeb.getAddress(),
+                            to: _formatUsdcAddress(widget.chainType),
+                            value: "0x",
+                            data: bytesToHex(erc20TokenData, include0x: true),
+                          ),
+                        );
+                        setState(() {
+                          erc20TransactionHash = txHash;
+                        });
+                      } catch (err, s) {
+                        print(err);
+                        print(s);
+                        setState(() {
+                          erc20TransactionHash = err.toString();
+                        });
+                      }
+                    },
+                    title: 'Send'),
               ],
             )),
             CustomCard(
@@ -330,9 +340,12 @@ class _TestPage extends State<TestPage> {
                 ),
                 const SizedBox(height: 40.0),
                 CustomInput(
-                  title: 'Message',
-                  controller: _messageController,
-                ),
+                    title: 'Message',
+                    controller: _messageController,
+                    onChanged: (v) {
+                      print(v);
+                      _messageController = v;
+                    }),
                 const SizedBox(height: 40.0),
                 CustomButton(
                     onPressed: () async {

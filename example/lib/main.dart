@@ -58,9 +58,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -92,7 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
     },
   ];
   var chain = "polygon";
-  String accountString = "";
   String signedMessage = "";
   String transactionHash = "";
   String erc20TransactionHash = "";
@@ -136,12 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     try {
       UpAccount upAccount = await uniPassWeb.connect(context);
-      setState(() {
-        accountString =
-            "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn}";
-      });
       web3.Web3Client client = uniPassWeb.getProvider();
-
       web3.EthereumAddress address =
           web3.EthereumAddress.fromHex(uniPassWeb.getAddress());
       web3.EtherAmount balance_ = await client.getBalance(address);
@@ -150,9 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
           address: web3.EthereumAddress.fromHex(_formatUsdcAddress(chainType)),
           client: client);
       BigInt usdcBalance_ = await contract.balanceOf(address);
-
-      print("${chainType.name} balance: ${balance_.getInWei.toString()}");
-      print("usdcBalance: ${usdcBalance_.toString()}");
 
       Navigator.push(
         context,
@@ -172,9 +161,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     } catch (err, s) {
       print(s);
-      setState(() {
-        accountString = err.toString();
-      });
     }
   }
 
@@ -340,6 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
+                SizedBox(height: 20.0,),
                 MaterialButton(
                   onPressed: () async {
                     loginUnipass(ConnectType.google);
@@ -360,9 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: _mainBackground,
                   textColor: _primaryTextColor,
                 ),
-                SizedBox(
-                  height: 20.0,
-                ),
+                SizedBox(height: 20.0,),
                 MaterialButton(
                   onPressed: () async {
                     loginUnipass(ConnectType.email);

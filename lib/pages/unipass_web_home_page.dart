@@ -57,7 +57,7 @@ class _UnipassWebHomePage extends State<UnipassWebHomePage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('send transaction', style: TextStyle(color: Colors.black)),
+          title: const Text('UniPass Wallet', style: TextStyle(color: Colors.black)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {

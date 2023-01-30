@@ -5,16 +5,17 @@ const Color _mainBackground = Color(0XFFF5F5F5);
 
 class CustomInput extends StatefulWidget {
   CustomInput({Key? key,
-    this.onTab,
     this.enabled = true,
     this.controller = "",
+    this.onChanged,
     required this.title, })
       : super(key: key);
 
   final String title;
-  final String? controller;
+  final onChanged;
+  late final String? controller;
   final bool? enabled;
-  final GestureTapCallback? onTab;
+
   @override
   _CustomInput createState() => _CustomInput();
 }
@@ -26,6 +27,9 @@ class _CustomInput extends State<CustomInput> {
   void initState() {
     super.initState();
     textController.text = widget.controller!;
+    textController.addListener(() {
+      widget.onChanged!(textController.text);
+    });
   }
 
   @override

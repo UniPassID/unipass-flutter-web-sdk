@@ -63,7 +63,7 @@ class _ConnectPageState extends State<ConnectPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('connect', style: TextStyle(color: Colors.black)),
+        title: const Text('Connect', style: TextStyle(color: Colors.black)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
