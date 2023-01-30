@@ -1,3 +1,4 @@
+import 'package:example/components/custom-card.dart';
 import 'package:example/erc20.g.dart';
 import 'package:example/page.dart';
 import 'package:flutter/material.dart';
@@ -201,401 +202,368 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const SizedBox(height: 40.0),
-            Container(
-                padding: const EdgeInsets.all(40.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
+            CustomCard(
                 child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BrnRadioButton(
-                          radioIndex: 0,
-                          isSelected: _isDark,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child: Text(
-                              'Dark mode',
-                            ),
-                          ),
-                          onValueChangedAtIndex: (index, value) {
-                            setState(() {
-                              _isDark = true;
-                              theme = UnipassTheme.dark;
-                              BrnToast.show('Dark mode', context);
-                            });
-                          },
+                    BrnRadioButton(
+                      radioIndex: 0,
+                      isSelected: _isDark,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Text(
+                          'Dark mode',
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        BrnRadioButton(
-                          radioIndex: 0,
-                          isSelected: !_isDark,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child: Text(
-                              'Light mode',
-                            ),
-                          ),
-                          onValueChangedAtIndex: (index, value) {
-                            setState(() {
-                              _isDark = false;
-                              theme = UnipassTheme.light;
-                              BrnToast.show('Light mode', context);
-                            });
-                          },
-                        ),
-                      ],
+                      ),
+                      onValueChangedAtIndex: (index, value) {
+                        setState(() {
+                          _isDark = true;
+                          theme = UnipassTheme.dark;
+                          BrnToast.show('Dark mode', context);
+                        });
+                      },
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 30, bottom: 10),
-                      child: DropdownButton<String>(
-                        value: chain,
-                        focusColor: _mainTextColor,
-                        // style: const TextStyle(color: _mainTextColor),
-                        dropdownColor: Colors.white,
-                        isExpanded: true,
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    BrnRadioButton(
+                      radioIndex: 0,
+                      isSelected: !_isDark,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Text(
+                          'Light mode',
+                        ),
+                      ),
+                      onValueChangedAtIndex: (index, value) {
+                        setState(() {
+                          _isDark = false;
+                          theme = UnipassTheme.light;
+                          BrnToast.show('Light mode', context);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 30, bottom: 10),
+                  child: DropdownButton<String>(
+                    value: chain,
+                    focusColor: _mainTextColor,
+                    // style: const TextStyle(color: _mainTextColor),
+                    dropdownColor: Colors.white,
+                    isExpanded: true,
+                    onChanged: (v) {
+                      // update the chain value
+                      setState(() {
+                        chain = v!;
+                      });
+                    },
+                    items: chainList
+                        .map<DropdownMenuItem<String>>(
+                            (Map item) => DropdownMenuItem<String>(
+                                value: item['value'],
+                                // add this property an pass the _value to it
+                                child: Text(
+                                  item['label'],
+                                  // style: const TextStyle(),
+                                )))
+                        .toList(),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Return address'),
+                    Switch(
+                        value: returnAddress,
                         onChanged: (v) {
-                          // update the chain value
                           setState(() {
-                            chain = v!;
+                            returnAddress = v!;
                           });
-                        },
-                        items: chainList
-                            .map<DropdownMenuItem<String>>(
-                                (Map item) => DropdownMenuItem<String>(
-                                    value: item['value'],
-                                    // add this property an pass the _value to it
-                                    child: Text(
-                                      item['label'],
-                                      // style: const TextStyle(),
-                                    )))
-                            .toList(),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Return address'),
-                        Switch(
-                            value: returnAddress,
-                            onChanged: (v) {
-                              setState(() {
-                                returnAddress = v!;
-                              });
-                            })
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Return email'),
-                        Switch(
-                            value: returnEmail,
-                            onChanged: (_value) {
-                              setState(() {
-                                returnEmail = _value!;
-                              });
-                            })
-                      ],
-                    )
+                        })
                   ],
-                )),
-            SizedBox(height: 40.0),
-            Container(
-              padding: const EdgeInsets.all(40.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          height: 1.0,
-                          decoration: BoxDecoration(
-                            color: _lineBackground,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24.0),
-                      const Expanded(
-                        flex: 4,
-                        child: Text(
-                          'Onboarding users through Google and Email',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _primaryTextColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24.0),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          height: 1.0,
-                          decoration: BoxDecoration(
-                            color: _lineBackground,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  MaterialButton(
-                    onPressed: () async {
-                      loginUnipass(ConnectType.google);
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset('assets/images/google.svg'),
-                        const SizedBox(width: 10.0),
-                        Text(
-                          "Continue with Google",
-                          style: TextStyle(fontSize: 16.0),
-                        )
-                      ],
-                    ),
-                    minWidth: double.infinity,
-                    height: 50.0,
-                    color: _mainBackground,
-                    textColor: _primaryTextColor,
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  MaterialButton(
-                    onPressed: () async {
-                      loginUnipass(ConnectType.email);
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset('assets/images/email.svg'),
-                        const SizedBox(width: 10.0),
-                        Text(
-                          "Continue with Email",
-                          style: TextStyle(fontSize: 16.0),
-                        )
-                      ],
-                    ),
-                    minWidth: double.infinity,
-                    height: 50.0,
-                    color: _mainBackground,
-                    textColor: _primaryTextColor,
-                  ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          height: 1.0,
-                          decoration: BoxDecoration(
-                            color: _lineBackground,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24.0),
-                      const Expanded(
-                        flex: 4,
-                        child: Text(
-                          'Connect UniPass through one button',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: _primaryTextColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 24.0),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          height: 1.0,
-                          decoration: BoxDecoration(
-                            color: _lineBackground,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  MaterialButton(
-                    onPressed: () async {
-                      // loginUnipass(ConnectType.both);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return TestPage(
-                            theme: theme,
-                            chainType: chainType,
-                            domain: domain,
-                            connectType: ConnectType.email,
-                            returnEmail: returnEmail,
-                          );
-                        }),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/unipass.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                        const SizedBox(width: 10.0),
-                        Text(
-                          "Connect UniPass",
-                          style: TextStyle(fontSize: 16.0),
-                        )
-                      ],
-                    ),
-                    minWidth: double.infinity,
-                    height: 50.0,
-                    color: _mainBackground,
-                    textColor: _primaryTextColor,
-                  ),
-                  //
-                  // Radio<int>(
-                  //   value: 0,
-                  //   groupValue: groupValue,
-                  //   onChanged: onChanged,
-                  // ),
-                ],
-              ),
-            ),
-            SizedBox(height: 40.0),
-            Container(
-                padding: const EdgeInsets.all(40.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20.0),
                 ),
-                child: Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'UniPass Documents',
-                      style: TextStyle(
-                        color: _primaryTextColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Text('Return email'),
+                    Switch(
+                        value: returnEmail,
+                        onChanged: (_value) {
+                          setState(() {
+                            returnEmail = _value!;
+                          });
+                        })
+                  ],
+                )
+              ],
+            )),
+            CustomCard(
+                child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        height: 1.0,
+                        decoration: BoxDecoration(
+                          color: _lineBackground,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 28.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 120),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 2,
-                                height: 2,
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  color: Color(0XFF5575FF),
-                                  borderRadius: BorderRadius.circular(2.0),
-                                ),
-                              ),
-                              Text(
-                                'UniPass Website',
-                                style: TextStyle(color: _mainTextColor),
-                              )
-                            ],
-                          ),
+                    const SizedBox(width: 24.0),
+                    const Expanded(
+                      flex: 4,
+                      child: Text(
+                        'Onboarding users through Google and Email',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _primaryTextColor,
                         ),
-                        SizedBox(width: 20.0),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 110),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 2,
-                                height: 2,
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  color: Color(0XFF5575FF),
-                                  borderRadius: BorderRadius.circular(2.0),
-                                ),
-                              ),
-                              Text(
-                                'Flutter SDK',
-                                style: TextStyle(color: _mainTextColor),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 120),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 2,
-                                height: 2,
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  color: Color(0XFF5575FF),
-                                  borderRadius: BorderRadius.circular(2.0),
-                                ),
-                              ),
-                              const Text(
-                                'Popup SDK',
-                                style: TextStyle(color: _mainTextColor),
-                              )
-                            ],
-                          ),
+                    const SizedBox(width: 24.0),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        height: 1.0,
+                        decoration: BoxDecoration(
+                          color: _lineBackground,
                         ),
-                        SizedBox(width: 20.0),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 110),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 2,
-                                height: 2,
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  color: Color(0XFF5575FF),
-                                  borderRadius: BorderRadius.circular(2.0),
-                                ),
-                              ),
-                              const Text(
-                                'Unity SDK',
-                                style: TextStyle(color: _mainTextColor),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
+                      ),
+                    ),
                   ],
-                )),
+                ),
+                MaterialButton(
+                  onPressed: () async {
+                    loginUnipass(ConnectType.google);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset('assets/images/google.svg'),
+                      const SizedBox(width: 10.0),
+                      Text(
+                        "Continue with Google",
+                        style: TextStyle(fontSize: 16.0),
+                      )
+                    ],
+                  ),
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                MaterialButton(
+                  onPressed: () async {
+                    loginUnipass(ConnectType.email);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset('assets/images/email.svg'),
+                      const SizedBox(width: 10.0),
+                      Text(
+                        "Continue with Email",
+                        style: TextStyle(fontSize: 16.0),
+                      )
+                    ],
+                  ),
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
+                ),
+                SizedBox(
+                  height: 40.0,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        height: 1.0,
+                        decoration: BoxDecoration(
+                          color: _lineBackground,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 24.0),
+                    const Expanded(
+                      flex: 4,
+                      child: Text(
+                        'Connect UniPass through one button',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _primaryTextColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 24.0),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        height: 1.0,
+                        decoration: BoxDecoration(
+                          color: _lineBackground,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                MaterialButton(
+                  onPressed: () async {
+                    loginUnipass(ConnectType.both);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/unipass.png',
+                        width: 24,
+                        height: 24,
+                      ),
+                      const SizedBox(width: 10.0),
+                      Text(
+                        "Connect UniPass",
+                        style: TextStyle(fontSize: 16.0),
+                      )
+                    ],
+                  ),
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
+                ),
+                //
+                // Radio<int>(
+                //   value: 0,
+                //   groupValue: groupValue,
+                //   onChanged: onChanged,
+                // ),
+              ],
+            )),
+            CustomCard(
+                child: Column(
+              children: [
+                const Text(
+                  'UniPass Documents',
+                  style: TextStyle(
+                    color: _primaryTextColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 28.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 120),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 2,
+                            height: 2,
+                            margin: EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0XFF5575FF),
+                              borderRadius: BorderRadius.circular(2.0),
+                            ),
+                          ),
+                          Text(
+                            'UniPass Website',
+                            style: TextStyle(color: _mainTextColor),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 20.0),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 110),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 2,
+                            height: 2,
+                            margin: EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0XFF5575FF),
+                              borderRadius: BorderRadius.circular(2.0),
+                            ),
+                          ),
+                          Text(
+                            'Flutter SDK',
+                            style: TextStyle(color: _mainTextColor),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 120),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 2,
+                            height: 2,
+                            margin: EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0XFF5575FF),
+                              borderRadius: BorderRadius.circular(2.0),
+                            ),
+                          ),
+                          const Text(
+                            'Popup SDK',
+                            style: TextStyle(color: _mainTextColor),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 20.0),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 110),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 2,
+                            height: 2,
+                            margin: EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0XFF5575FF),
+                              borderRadius: BorderRadius.circular(2.0),
+                            ),
+                          ),
+                          const Text(
+                            'Unity SDK',
+                            style: TextStyle(color: _mainTextColor),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            )),
           ],
         ),
       ),
