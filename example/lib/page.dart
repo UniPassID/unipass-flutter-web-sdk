@@ -17,10 +17,12 @@ import 'erc20.g.dart';
 
 const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
 const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
-const rangersUsdcAddress = "0xd6ed1c13914ff1b08737b29de4039f542162cae1";
+const rangersUsdcAddress = "0xd6Ed1C13914FF1b08737b29De4039F542162cAE1";
+const ethUsdcAddress = "0x365E05Fd986245d14c740c139DF8712AD8807874";
 const polygonUsdcDecimal = 6;
 const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
+const ethUsdcDecimal = 6;
 const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainBackground = Color(0XFFF5F5F5);
 
@@ -417,6 +419,7 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.polygon) return "Matic";
     if (chainType == ChainType.bsc) return "BNB";
     if (chainType == ChainType.rangers) return "RPG";
+    if (chainType == ChainType.eth) return "ETH";
     return "";
   }
 
@@ -424,6 +427,7 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.polygon) return polygonUsdcAddress;
     if (chainType == ChainType.bsc) return bscUsdcAddress;
     if (chainType == ChainType.rangers) return rangersUsdcAddress;
+    if (chainType == ChainType.eth) return ethUsdcAddress;
     return "";
   }
 
@@ -431,6 +435,7 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.polygon) return polygonUsdcDecimal;
     if (chainType == ChainType.bsc) return bscUsdcDecimal;
     if (chainType == ChainType.rangers) return rangersUsdcDecimal;
+    if (chainType == ChainType.eth) return ethUsdcDecimal;
     return 18;
   }
 }

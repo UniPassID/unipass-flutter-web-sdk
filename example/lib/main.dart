@@ -17,6 +17,10 @@ const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainTextColor = Color(0xFF8864FF);
 const Color _lineBackground = Color(0XFFe5e5e5);
 const Color _mainBackground = Color(0XFFF5F5F5);
+const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
+const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
+const rangersUsdcAddress = "0xd6Ed1C13914FF1b08737b29De4039F542162cAE1";
+const ethUsdcAddress = "0x365E05Fd986245d14c740c139DF8712AD8807874";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -73,23 +77,22 @@ class _MyHomePageState extends State<MyHomePage> {
   bool returnAddress = true;
   var chainList = const [
     {
-      "value": "polygon",
+      "value": ChainType.polygon,
       "label": "Mumbai (ChainID 80001)",
     },
     {
-      "value": "bsc",
+      "value": ChainType.bsc,
       "label": "BSCtestnet (ChainID 97)",
     },
     {
-      "value": "rangers",
+      "value": ChainType.rangers,
       "label": "Rangers robin (ChainID 9527)",
     },
     {
-      "value": "eth",
+      "value": ChainType.eth,
       "label": "Goerli (ChainID 5)",
     },
   ];
-  var chain = "polygon";
   String signedMessage = "";
   String transactionHash = "";
   String erc20TransactionHash = "";
@@ -98,32 +101,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String domain = "testnet.wallet.unipass.id";
   late UniPassWeb uniPassWeb;
-  final TextEditingController _toController = TextEditingController();
-  final TextEditingController _toErc20Controller = TextEditingController();
 
   String _formatUsdcAddress(ChainType chainType) {
+    print('chainType: ${chainType}');
     if (chainType == ChainType.polygon) return polygonUsdcAddress;
     if (chainType == ChainType.bsc) return bscUsdcAddress;
     if (chainType == ChainType.rangers) return rangersUsdcAddress;
+    if (chainType == ChainType.eth) return ethUsdcAddress;
     return "";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    print('current domain: ${domain}');
-
-    _toController.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
-    _toErc20Controller.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
-  }
-
   loginUnipass(connectType) async {
+    print('chainType: ${chainType}');
     uniPassWeb = UniPassWeb(
       UniPassOption(
         domain: domain,
         protocol: "https",
         appSetting: AppSetting(
-          appName: "demo dapp",
+          appName: "demo app",
           theme: theme,
           chainType: chainType,
         ),
@@ -160,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
       );
     } catch (err, s) {
-      print(s);
+      print("err: ${s}");
     }
   }
 
@@ -235,21 +230,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 30, bottom: 10),
-                  child: DropdownButton<String>(
-                    value: chain,
+                  child: DropdownButton(
+                    value: chainType,
                     focusColor: _mainTextColor,
                     // style: const TextStyle(color: _mainTextColor),
                     dropdownColor: Colors.white,
                     isExpanded: true,
                     onChanged: (v) {
-                      // update the chain value
+                      print(v);
                       setState(() {
-                        chain = v!;
+                        chainType = v!;
                       });
                     },
                     items: chainList
-                        .map<DropdownMenuItem<String>>(
-                            (Map item) => DropdownMenuItem<String>(
+                        .map<DropdownMenuItem<ChainType>>(
+                            (Map item) => DropdownMenuItem<ChainType>(
                                 value: item['value'],
                                 // add this property an pass the _value to it
                                 child: Text(
