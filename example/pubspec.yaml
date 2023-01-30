@@ -29,6 +29,9 @@ dependencies:
   oktoast: ^3.3.1
   unipass_web_sdk:
     path: ../
+  flutter_svg: ^1.1.6
+  bruno: ^3.2.0
+  flutter_json_view: ^1.0.0
 
 dev_dependencies:
   flutter_test:
