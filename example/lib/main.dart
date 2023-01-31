@@ -201,6 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     BrnRadioButton(
                       radioIndex: 0,
@@ -219,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 20,
                     ),
                     BrnRadioButton(
                       radioIndex: 0,
@@ -234,25 +235,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           theme = UnipassTheme.light;
                           BrnToast.show('Light mode', context);
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    BrnRadioButton(
-                      radioIndex: 0,
-                      isSelected: theme == UnipassTheme.cassava,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 5),
-                        child: Text(
-                          'Cassava',
-                        ),
-                      ),
-                      onValueChangedAtIndex: (index, value) {
-                        setState(() {
-                          theme = UnipassTheme.cassava;
-                          BrnToast.show('Cassava mode', context);
                         });
                       },
                     ),
