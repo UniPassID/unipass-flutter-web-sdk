@@ -78,7 +78,7 @@ const List<String> list = <String>[];
 class _MyHomePageState extends State<MyHomePage> {
   UnipassTheme theme = UnipassTheme.light;
   ChainType chainType = ChainType.polygon;
-  bool returnEmail = false;
+  bool returnEmail = true;
   bool returnAddress = true;
   var chainList = const [
     {
@@ -201,7 +201,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     BrnRadioButton(
                       radioIndex: 0,
@@ -500,7 +499,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20.0),
+                    const SizedBox(width: 10.0),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 110),
                       child: Row(
@@ -573,7 +572,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20.0),
+                    const SizedBox(width: 10.0),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 110),
                       child: Row(

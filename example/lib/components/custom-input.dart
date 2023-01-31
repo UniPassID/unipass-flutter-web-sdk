@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:oktoast/oktoast.dart';
 
 const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainBackground = Color(0XFFF5F5F5);
@@ -9,11 +11,13 @@ class CustomInput extends StatefulWidget {
     this.controller = "",
     this.maxLines = 1,
     this.onChanged,
+    this.copyVisible = false,
     required this.title, })
       : super(key: key);
 
   final String title;
   final int? maxLines;
+  final bool? copyVisible;
   final onChanged;
   late final String? controller;
   final bool? enabled;
@@ -39,12 +43,30 @@ class _CustomInput extends State<CustomInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.title,
-          style: const TextStyle(
-              color: _primaryTextColor,
-              fontSize: 14,
-              fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.title,
+              style: const TextStyle(
+                  color: _primaryTextColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold),
+            ),
+            widget.copyVisible! ? InkWell(
+              onTap: () async {
+                await Clipboard.setData(ClipboardData(text: textController.text));
+                showToast('Copy succeeded!');
+              },
+              child: Text(
+                'Copy',
+                style: TextStyle(
+                    color: _primaryTextColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
+            ) : Container()
+          ],
         ),
         const SizedBox(height: 8.0),
         Container(

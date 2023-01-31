@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bruno/bruno.dart';
 import 'package:example/components/custom-button.dart';
 import 'package:example/components/custom-card.dart';
 import 'package:example/components/custom-input.dart';
@@ -159,12 +160,14 @@ class _TestPage extends State<TestPage> {
                 CustomInput(
                   title: 'Your address',
                   enabled: false,
+                  copyVisible: true,
                   controller: widget.address,
                 ),
                 const SizedBox(height: 20.0),
                 CustomInput(
                   title: 'Your email',
                   enabled: false,
+                  copyVisible: true,
                   controller: widget.email,
                 ),
                 const SizedBox(height: 20.0),
@@ -439,8 +442,19 @@ class _TestPage extends State<TestPage> {
                     CustomButton(
                         onPressed: () async {
                           try {
-                            await Clipboard.setData(ClipboardData(text: _verifyMessageController));
-                          } catch (err) {}
+                            if (_messageController.isEmpty || _verifyMessageController.isEmpty) {
+                              _showToast("input is empty");
+                              return;
+                            }
+                            bool isValid = await uniPassWeb.isValidSignature(_verifyMessageController, _messageController);
+                            if(isValid) {
+                              _showToast("verify signature success");
+                            } else {
+                              _showToast("verify signature failed");
+                            }
+                          } catch (err, s) {
+                            _showToast(err.toString());
+                          }
                         },
                         title: 'Verify'),
                   ],
@@ -507,8 +521,19 @@ class _TestPage extends State<TestPage> {
                     CustomButton(
                         onPressed: () async {
                           try {
-                            await Clipboard.setData(ClipboardData(text: signedMessage));
-                          } catch (err) {}
+                            if (_sendMessage.isEmpty || signedMessage.isEmpty) {
+                              _showToast("input is empty");
+                              return;
+                            }
+                            bool isValid = await uniPassWeb.isValidSignature(signedMessage, _sendMessage);
+                            if(isValid) {
+                              _showToast("verify signature success");
+                            } else {
+                              _showToast("verify signature succfailedess");
+                            }
+                          } catch (err, s) {
+                            _showToast(err.toString());
+                          }
                         },
                         title: 'Verify'),
                   ],
