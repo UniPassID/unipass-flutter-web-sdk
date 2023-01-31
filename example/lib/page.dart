@@ -260,7 +260,6 @@ class _TestPage extends State<TestPage> {
                     const SizedBox(height: 40.0),
                     const Text(
                       'Transaction hash',
-                      textAlign: TextAlign.left,
                       style: TextStyle(
                           color: _primaryTextColor,
                           fontSize: 14,
@@ -367,7 +366,6 @@ class _TestPage extends State<TestPage> {
                     const SizedBox(height: 40.0),
                     const Text(
                       'Transaction hash',
-                      textAlign: TextAlign.left,
                       style: TextStyle(
                           color: _primaryTextColor,
                           fontSize: 14,
