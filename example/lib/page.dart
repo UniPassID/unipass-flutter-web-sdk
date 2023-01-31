@@ -30,6 +30,11 @@ const rangersExplorerDict = "https://robin-rangersscan.rangersprotocol.com";
 const ethExplorerDict = "https://goerli.etherscan.io";
 const polygonExplorerDict = "https://mumbai.polygonscan.com";
 
+const polygonName = "Polygon-mumbai";
+const bscName = "BSC-testnet";
+const rangersName = "Rangers-robin";
+const ethName = "ETH-goerli";
+
 const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainBackground = Color(0XFFF5F5F5);
 const Color _transactionHashText = Color(0XFF4AAC4C);
@@ -126,8 +131,8 @@ class _TestPage extends State<TestPage> {
         child: ListBody(
           children: [
             //
-            const Text(
-              'UniPass Demo (Polygon-mumbai)',
+            Text(
+              'UniPass Demo (${_formatChainName(widget.chainType)})',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: _primaryTextColor,
@@ -550,6 +555,15 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.rangers) return rangersUsdcDecimal;
     if (chainType == ChainType.eth) return ethUsdcDecimal;
     return 18;
+  }
+
+  String _formatChainName(ChainType chainType) {
+    print('chainType: ${chainType}');
+    if (chainType == ChainType.polygon) return polygonName;
+    if (chainType == ChainType.bsc) return bscName;
+    if (chainType == ChainType.rangers) return rangersName;
+    if (chainType == ChainType.eth) return ethName;
+    return "";
   }
 }
 

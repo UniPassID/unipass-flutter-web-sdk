@@ -23,6 +23,11 @@ const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
 const rangersUsdcAddress = "0xd6Ed1C13914FF1b08737b29De4039F542162cAE1";
 const ethUsdcAddress = "0x365E05Fd986245d14c740c139DF8712AD8807874";
 
+const polygonName = "Polygon-mumbai";
+const bscName = "BSC-testnet";
+const rangersName = "Rangers-robin";
+const ethName = "ETH-goerli";
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -111,6 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return "";
   }
 
+  String _formatChainName(ChainType chainType) {
+    print('chainType: ${chainType}');
+    if (chainType == ChainType.polygon) return polygonName;
+    if (chainType == ChainType.bsc) return bscName;
+    if (chainType == ChainType.rangers) return rangersName;
+    if (chainType == ChainType.eth) return ethName;
+    return "";
+  }
+
   loginUnipass(connectType) async {
     print('chainType: ${chainType}');
     uniPassWeb = UniPassWeb(
@@ -174,8 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: ListBody(
           children: [
-            const Text(
-              'UniPass Demo (Polygon-mumbai)',
+            Text(
+              'UniPass Demo (${_formatChainName(chainType)})',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: _primaryTextColor,
