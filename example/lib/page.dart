@@ -251,7 +251,7 @@ class _TestPage extends State<TestPage> {
                   children: [
                     const SizedBox(height: 40.0),
                     CustomInput(
-                      title: 'Signature',
+                      title: 'Transaction hash',
                       maxLines: 10,
                       controller: transactionHash,
                       enabled: false,
@@ -346,7 +346,7 @@ class _TestPage extends State<TestPage> {
                   children: [
                     const SizedBox(height: 40.0),
                     CustomInput(
-                      title: 'Signature',
+                      title: 'Transaction hash',
                       maxLines: 10,
                       controller: erc20TransactionHash,
                       enabled: false,
