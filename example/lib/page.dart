@@ -19,12 +19,20 @@ const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
 const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
 const rangersUsdcAddress = "0xd6Ed1C13914FF1b08737b29De4039F542162cAE1";
 const ethUsdcAddress = "0x365E05Fd986245d14c740c139DF8712AD8807874";
+
 const polygonUsdcDecimal = 6;
 const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
 const ethUsdcDecimal = 6;
+
+const bscExplorerDict = "https://testnet.bscscan.com";
+const rangersExplorerDict = "https://robin-rangersscan.rangersprotocol.com";
+const ethExplorerDict = "https://goerli.etherscan.io";
+const polygonExplorerDict = "https://mumbai.polygonscan.com";
+
 const Color _primaryTextColor = Color(0xFF1F202A);
 const Color _mainBackground = Color(0XFFF5F5F5);
+const Color _transactionHashText = Color(0XFF4AAC4C);
 
 class TestPage extends StatefulWidget {
   const TestPage({
@@ -98,8 +106,8 @@ class _TestPage extends State<TestPage> {
       ),
     );
     initPage();
-    _addressController = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
-    _toErc20Controller = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
+    _addressController = "0x61E428AaB6347765eFc549eae7bd740aA886A707";
+    _toErc20Controller = "0x61E428AaB6347765eFc549eae7bd740aA886A707";
   }
 
   @override
@@ -188,9 +196,9 @@ class _TestPage extends State<TestPage> {
             CustomCard(
                 child: Column(
               children: [
-                const Text(
-                  'Send ETH',
-                  style: TextStyle(
+                Text(
+                  'Send ${_formatNativeTokenName(widget.chainType)}',
+                  style: const TextStyle(
                       color: _primaryTextColor,
                       fontSize: 24,
                       fontWeight: FontWeight.bold),
@@ -250,20 +258,32 @@ class _TestPage extends State<TestPage> {
                 transactionHash == '' ? Container() : Column(
                   children: [
                     const SizedBox(height: 40.0),
-                    CustomInput(
-                      title: 'Transaction hash',
-                      maxLines: 10,
-                      controller: transactionHash,
-                      enabled: false,
+                    const Text(
+                      'Transaction hash',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                        onPressed: () async {
-                          try {
-                            await Clipboard.setData(ClipboardData(text: transactionHash));
-                          } catch (err) {}
-                        },
-                        title: 'Verify'),
+                    const SizedBox(height: 8.0),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UnipassWebPage(
+                              url: '${_formatHashUrl(widget.chainType)}/tx/${transactionHash}',
+                              title: '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        transactionHash,
+                        style: TextStyle(color: _transactionHashText,decoration: TextDecoration.underline,),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -345,20 +365,32 @@ class _TestPage extends State<TestPage> {
                 erc20TransactionHash == '' ? Container() : Column(
                   children: [
                     const SizedBox(height: 40.0),
-                    CustomInput(
-                      title: 'Transaction hash',
-                      maxLines: 10,
-                      controller: erc20TransactionHash,
-                      enabled: false,
+                    const Text(
+                      'Transaction hash',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: _primaryTextColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                        onPressed: () async {
-                          try {
-                            await Clipboard.setData(ClipboardData(text: erc20TransactionHash));
-                          } catch (err) {}
-                        },
-                        title: 'Verify'),
+                    const SizedBox(height: 8.0),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UnipassWebPage(
+                              url: '${_formatHashUrl(widget.chainType)}/tx/${erc20TransactionHash}',
+                              title: '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        erc20TransactionHash,
+                        style: TextStyle(color: _transactionHashText,decoration: TextDecoration.underline,),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -503,6 +535,14 @@ class _TestPage extends State<TestPage> {
     if (chainType == ChainType.bsc) return bscUsdcAddress;
     if (chainType == ChainType.rangers) return rangersUsdcAddress;
     if (chainType == ChainType.eth) return ethUsdcAddress;
+    return "";
+  }
+
+  String _formatHashUrl(ChainType chainType) {
+    if (chainType == ChainType.polygon) return polygonExplorerDict;
+    if (chainType == ChainType.bsc) return bscExplorerDict;
+    if (chainType == ChainType.rangers) return rangersExplorerDict;
+    if (chainType == ChainType.eth) return ethExplorerDict;
     return "";
   }
 

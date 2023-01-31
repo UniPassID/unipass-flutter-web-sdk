@@ -52,6 +52,7 @@ Future<String> pushSignMessage(BuildContext context, String message, UpAccount a
 Future<String> pushSendTransaction(BuildContext context, TransactionMessage transaction, UniPassConfig config) async {
   final String url = getWalletUrl(MessageType.upSendTransaction, config.domain, config.protocol);
   print("[pushSignMessage: $url]");
+  print("[transaction: $transaction]");
   Completer<String> completer = Completer<String>();
   Navigator.push(
     context,
