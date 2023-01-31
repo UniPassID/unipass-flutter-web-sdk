@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:unipass_web_sdk/pages/unipass_web_home_page.dart';
+import 'package:unipass_web_sdk/pages/unipass_web_page.dart';
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
 import 'package:web3dart/web3dart.dart' as web3;
 import 'package:web3dart/crypto.dart';
@@ -68,7 +68,6 @@ class _TestPage extends State<TestPage> {
   String _sendMessage =
       '{"from":{"name":"Cow","wallet":"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},"to":{"name":"Bob","wallet":"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},"contents":"Hello, Bob!"}';
   String _messageController = 'Welcome to UniPass!';
-  String _sigController = "";
   String _verifyMessageController = "";
   String _transactionController = "";
   String _transactionErc20Controller = "";
@@ -108,7 +107,7 @@ class _TestPage extends State<TestPage> {
     return Scaffold(
       backgroundColor: _mainBackground,
       appBar: AppBar(
-        title: Text('demo'),
+        title: const Text('demo'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -133,12 +132,11 @@ class _TestPage extends State<TestPage> {
               children: [
                 CustomButton(
                     onPressed: () {
-                      var url = 'https://testnet.wallet.unipass.id/';
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UnipassWebHomePage(
-                            url: url,
+                          builder: (context) => const UnipassWebPage(
+                            url: 'https://testnet.wallet.unipass.id/',
                           ),
                         ),
                       );
@@ -173,7 +171,6 @@ class _TestPage extends State<TestPage> {
                         erc20TransactionHash = "";
                         isValidSignature = "";
                         _typeData = "";
-                        _sigController = "";
                         _verifyMessageController = "";
                         _transactionController = "";
                         _transactionErc20Controller = "";
@@ -250,6 +247,25 @@ class _TestPage extends State<TestPage> {
                       }
                     },
                     title: 'Send'),
+                transactionHash == '' ? Container() : Column(
+                  children: [
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Signature',
+                      maxLines: 10,
+                      controller: transactionHash,
+                      enabled: false,
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(
+                        onPressed: () async {
+                          try {
+                            await Clipboard.setData(ClipboardData(text: transactionHash));
+                          } catch (err) {}
+                        },
+                        title: 'Verify'),
+                  ],
+                ),
               ],
             )),
             CustomCard(
@@ -319,15 +335,32 @@ class _TestPage extends State<TestPage> {
                         setState(() {
                           erc20TransactionHash = txHash;
                         });
-                      } catch (err, s) {
-                        print(err);
-                        print(s);
+                      } catch (err) {
                         setState(() {
                           erc20TransactionHash = err.toString();
                         });
                       }
                     },
                     title: 'Send'),
+                erc20TransactionHash == '' ? Container() : Column(
+                  children: [
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Signature',
+                      maxLines: 10,
+                      controller: erc20TransactionHash,
+                      enabled: false,
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(
+                        onPressed: () async {
+                          try {
+                            await Clipboard.setData(ClipboardData(text: erc20TransactionHash));
+                          } catch (err) {}
+                        },
+                        title: 'Verify'),
+                  ],
+                ),
               ],
             )),
             CustomCard(
@@ -343,17 +376,40 @@ class _TestPage extends State<TestPage> {
                 const SizedBox(height: 40.0),
                 CustomInput(
                     title: 'Message',
+                    maxLines: 10,
                     controller: _messageController,
                     onChanged: (v) {
-                      print(v);
                       _messageController = v;
                     }),
                 const SizedBox(height: 40.0),
                 CustomButton(
                     onPressed: () async {
-                      await uniPassWeb.signMessage(context, _messageController);
+                      String signMessage = await uniPassWeb.signMessage(context, _messageController);
+                      print('signMessage: ${signMessage}');
+                      setState(() {
+                        _verifyMessageController = signMessage;
+                      });
                     },
                     title: 'Sign Message'),
+                _verifyMessageController == '' ? Container() : Column(
+                  children: [
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Signature',
+                      maxLines: 10,
+                      controller: _verifyMessageController,
+                      enabled: false,
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(
+                        onPressed: () async {
+                          try {
+                            await Clipboard.setData(ClipboardData(text: _verifyMessageController));
+                          } catch (err) {}
+                        },
+                        title: 'Verify'),
+                  ],
+                ),
               ],
             )),
             CustomCard(
@@ -403,6 +459,25 @@ class _TestPage extends State<TestPage> {
                       });
                     },
                     title: 'Sign Typed Data'),
+                signedMessage == '' ? Container() : Column(
+                  children: [
+                    const SizedBox(height: 40.0),
+                    CustomInput(
+                      title: 'Signature',
+                      maxLines: 10,
+                      controller: signedMessage,
+                      enabled: false,
+                    ),
+                    const SizedBox(height: 40.0),
+                    CustomButton(
+                        onPressed: () async {
+                          try {
+                            await Clipboard.setData(ClipboardData(text: signedMessage));
+                          } catch (err) {}
+                        },
+                        title: 'Verify'),
+                  ],
+                ),
               ],
             )),
           ],

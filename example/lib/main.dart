@@ -4,6 +4,7 @@ import 'package:example/page.dart';
 import 'package:flutter/material.dart';
 import 'package:bruno/bruno.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unipass_web_sdk/pages/unipass_web_page.dart';
 import 'package:unipass_web_sdk/utils/interface.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:unipass_web_sdk/unipass_web_sdk.dart';
@@ -73,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   UnipassTheme theme = UnipassTheme.light;
   ChainType chainType = ChainType.polygon;
   bool returnEmail = false;
-  bool _isDark = true;
   bool returnAddress = true;
   var chainList = const [
     {
@@ -191,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     BrnRadioButton(
                       radioIndex: 0,
-                      isSelected: _isDark,
+                      isSelected: theme == UnipassTheme.dark,
                       child: const Padding(
                         padding: EdgeInsets.only(left: 5),
                         child: Text(
@@ -200,18 +200,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onValueChangedAtIndex: (index, value) {
                         setState(() {
-                          _isDark = true;
                           theme = UnipassTheme.dark;
                           BrnToast.show('Dark mode', context);
                         });
                       },
                     ),
                     const SizedBox(
-                      width: 20,
+                      width: 5,
                     ),
                     BrnRadioButton(
                       radioIndex: 0,
-                      isSelected: !_isDark,
+                      isSelected: theme == UnipassTheme.light,
                       child: const Padding(
                         padding: EdgeInsets.only(left: 5),
                         child: Text(
@@ -220,9 +219,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       onValueChangedAtIndex: (index, value) {
                         setState(() {
-                          _isDark = false;
                           theme = UnipassTheme.light;
                           BrnToast.show('Light mode', context);
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    BrnRadioButton(
+                      radioIndex: 0,
+                      isSelected: theme == UnipassTheme.cassava,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Text(
+                          'Cassava',
+                        ),
+                      ),
+                      onValueChangedAtIndex: (index, value) {
+                        setState(() {
+                          theme = UnipassTheme.cassava;
+                          BrnToast.show('Cassava mode', context);
                         });
                       },
                     ),
@@ -237,7 +254,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     dropdownColor: Colors.white,
                     isExpanded: true,
                     onChanged: (v) {
-                      print(v);
                       setState(() {
                         chainType = v!;
                       });
@@ -259,23 +275,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     const Text('Return address'),
                     Switch(
-                        value: returnAddress,
-                        onChanged: (v) {
-                          setState(() {
-                            returnAddress = v!;
-                          });
-                        })
+                        value: true,
+                        onChanged: (v) {})
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Return email'),
+                    const Text('Return email'),
                     Switch(
                         value: returnEmail,
-                        onChanged: (_value) {
+                        onChanged: (value) {
                           setState(() {
-                            returnEmail = _value!;
+                            returnEmail = value!;
                           });
                         })
                   ],
@@ -292,7 +304,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: _lineBackground,
                         ),
                       ),
@@ -314,58 +326,56 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: _lineBackground,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20.0,),
+                const SizedBox(height: 20.0,),
                 MaterialButton(
                   onPressed: () async {
                     loginUnipass(ConnectType.google);
                   },
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset('assets/images/google.svg'),
                       const SizedBox(width: 10.0),
-                      Text(
+                      const Text(
                         "Continue with Google",
                         style: TextStyle(fontSize: 16.0),
                       )
                     ],
                   ),
-                  minWidth: double.infinity,
-                  height: 50.0,
-                  color: _mainBackground,
-                  textColor: _primaryTextColor,
                 ),
-                SizedBox(height: 20.0,),
+                const SizedBox(height: 20.0,),
                 MaterialButton(
                   onPressed: () async {
                     loginUnipass(ConnectType.email);
                   },
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset('assets/images/email.svg'),
                       const SizedBox(width: 10.0),
-                      Text(
+                      const Text(
                         "Continue with Email",
                         style: TextStyle(fontSize: 16.0),
                       )
                     ],
                   ),
-                  minWidth: double.infinity,
-                  height: 50.0,
-                  color: _mainBackground,
-                  textColor: _primaryTextColor,
                 ),
-                SizedBox(
-                  height: 40.0,
-                ),
+                const SizedBox(height: 40.0),
                 Row(
                   children: [
                     Expanded(
@@ -373,7 +383,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: _lineBackground,
                         ),
                       ),
@@ -395,20 +405,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: _lineBackground,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 20.0,
-                ),
+                const SizedBox(height: 20.0,),
                 MaterialButton(
                   onPressed: () async {
                     loginUnipass(ConnectType.both);
                   },
+                  minWidth: double.infinity,
+                  height: 50.0,
+                  color: _mainBackground,
+                  textColor: _primaryTextColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -418,23 +430,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 24,
                       ),
                       const SizedBox(width: 10.0),
-                      Text(
+                      const Text(
                         "Connect UniPass",
                         style: TextStyle(fontSize: 16.0),
                       )
                     ],
                   ),
-                  minWidth: double.infinity,
-                  height: 50.0,
-                  color: _mainBackground,
-                  textColor: _primaryTextColor,
                 ),
-                //
-                // Radio<int>(
-                //   value: 0,
-                //   groupValue: groupValue,
-                //   onChanged: onChanged,
-                // ),
               ],
             )),
             CustomCard(
@@ -448,95 +450,146 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 28.0),
+                const SizedBox(height: 28.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 120),
+                      constraints: const BoxConstraints(maxWidth: 120),
                       child: Row(
                         children: [
                           Container(
                             width: 2,
                             height: 2,
-                            margin: EdgeInsets.only(right: 10),
+                            margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: Color(0XFF5575FF),
+                              color: const Color(0XFF5575FF),
                               borderRadius: BorderRadius.circular(2.0),
                             ),
                           ),
-                          Text(
-                            'UniPass Website',
-                            style: TextStyle(color: _mainTextColor),
-                          )
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UnipassWebPage(
+                                    url: 'https://unipass.id/',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'UniPass Website',
+                              style: TextStyle(color: _mainTextColor),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(width: 20.0),
+                    const SizedBox(width: 20.0),
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 110),
+                      constraints: const BoxConstraints(maxWidth: 110),
                       child: Row(
                         children: [
                           Container(
                             width: 2,
                             height: 2,
-                            margin: EdgeInsets.only(right: 10),
+                            margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: Color(0XFF5575FF),
+                              color: const Color(0XFF5575FF),
                               borderRadius: BorderRadius.circular(2.0),
                             ),
                           ),
-                          Text(
-                            'Flutter SDK',
-                            style: TextStyle(color: _mainTextColor),
-                          )
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UnipassWebPage(
+                                    url: 'https://docs.wallet.unipass.id/docs/develop/flutter-sdk/quick-start',
+                                    title: 'Flutter SDK',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Flutter SDK',
+                              style: TextStyle(color: _mainTextColor),
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 120),
+                      constraints: const BoxConstraints(maxWidth: 120),
                       child: Row(
                         children: [
                           Container(
                             width: 2,
                             height: 2,
-                            margin: EdgeInsets.only(right: 10),
+                            margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: Color(0XFF5575FF),
+                              color: const Color(0XFF5575FF),
                               borderRadius: BorderRadius.circular(2.0),
                             ),
                           ),
-                          const Text(
-                            'Popup SDK',
-                            style: TextStyle(color: _mainTextColor),
-                          )
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UnipassWebPage(
+                                    url: 'https://docs.wallet.unipass.id/docs/develop/popup-sdk/quick-start',
+                                    title: 'Popup SDK',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Popup SDK',
+                              style: TextStyle(color: _mainTextColor),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(width: 20.0),
+                    const SizedBox(width: 20.0),
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 110),
+                      constraints: const BoxConstraints(maxWidth: 110),
                       child: Row(
                         children: [
                           Container(
                             width: 2,
                             height: 2,
-                            margin: EdgeInsets.only(right: 10),
+                            margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: Color(0XFF5575FF),
+                              color: const Color(0XFF5575FF),
                               borderRadius: BorderRadius.circular(2.0),
                             ),
                           ),
-                          const Text(
-                            'Unity SDK',
-                            style: TextStyle(color: _mainTextColor),
-                          )
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UnipassWebPage(
+                                    url: 'https://docs.wallet.unipass.id/docs/develop/unity-sdk/quick-start',
+                                    title: 'Unity SDK',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Unity SDK',
+                              style: TextStyle(color: _mainTextColor),
+                            ),
+                          ),
                         ],
                       ),
                     ),

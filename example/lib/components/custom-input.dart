@@ -7,11 +7,13 @@ class CustomInput extends StatefulWidget {
   CustomInput({Key? key,
     this.enabled = true,
     this.controller = "",
+    this.maxLines = 1,
     this.onChanged,
     required this.title, })
       : super(key: key);
 
   final String title;
+  final int? maxLines;
   final onChanged;
   late final String? controller;
   final bool? enabled;
@@ -58,6 +60,7 @@ class _CustomInput extends State<CustomInput> {
             autofocus: false,
             enabled: widget.enabled,
             keyboardType: TextInputType.text,
+            maxLines: widget.maxLines,
             decoration: const InputDecoration(
               border: InputBorder.none,
               labelStyle: TextStyle(

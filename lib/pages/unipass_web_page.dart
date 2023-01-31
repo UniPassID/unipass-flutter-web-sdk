@@ -7,19 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:unipass_web_sdk/utils/interface.dart';
 
-class UnipassWebHomePage extends StatefulWidget {
-  const UnipassWebHomePage({
+class UnipassWebPage extends StatefulWidget {
+  const UnipassWebPage({
     Key? key,
     required this.url,
+    this.title = 'UniPass Wallet',
   }) : super(key: key);
 
   final String url;
+  final String title;
 
   @override
-  State<UnipassWebHomePage> createState() => _UnipassWebHomePage();
+  State<UnipassWebPage> createState() => _UnipassWebPage();
 }
 
-class _UnipassWebHomePage extends State<UnipassWebHomePage> {
+class _UnipassWebPage extends State<UnipassWebPage> {
   final GlobalKey webViewKey = GlobalKey();
   double progress = 0;
   InAppWebViewController? webViewController;
@@ -57,7 +59,7 @@ class _UnipassWebHomePage extends State<UnipassWebHomePage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('UniPass Wallet', style: TextStyle(color: Colors.black)),
+          title: Text(widget.title, style: TextStyle(color: Colors.black)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
