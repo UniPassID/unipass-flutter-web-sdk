@@ -6,7 +6,7 @@ enum ChainType { polygon, eth, bsc, rangers }
 
 enum Protocol { https, http }
 
-enum UnipassTheme { light, dark }
+enum UnipassTheme { light, dark, mufex }
 
 enum MessageType {
   upReady,
