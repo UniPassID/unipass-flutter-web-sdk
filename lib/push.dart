@@ -13,6 +13,7 @@ Future<UpAccount> pushConnect(BuildContext context, UniPassConfig config) async 
   if (localAccount != null) return localAccount;
   final String url = getWalletUrl(MessageType.upConnect, config.domain, config.protocol, connectType: config.connectType);
   print("[pushConnect: $url]");
+  print("[config.authorize: ${config.authorize}]");
   Completer<UpAccount> completer = Completer<UpAccount>();
   Navigator.push(
     context,
@@ -22,6 +23,7 @@ Future<UpAccount> pushConnect(BuildContext context, UniPassConfig config) async 
         url: url,
         appSetting: config.appSetting,
         returnEmail: config.returnEmail ?? false,
+        authorize: config.authorize,
       ),
     ),
   );

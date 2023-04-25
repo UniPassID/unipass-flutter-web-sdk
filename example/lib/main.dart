@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   ChainType chainType = ChainType.polygon;
   bool returnEmail = false;
 
-  String domain = "testnet.wallet.unipass.id";
+  String domain = "d.wallet.unipass.vip";
 
   int count = 0;
 

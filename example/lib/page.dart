@@ -81,6 +81,7 @@ class _TestPage extends State<TestPage> {
         ),
         returnEmail: widget.returnEmail,
         connectType: widget.connectType,
+        authorize: true,
       ),
     );
     _toController.text = "0x2B6c74b4e8631854051B1A821029005476C3AF06";
@@ -107,7 +108,7 @@ class _TestPage extends State<TestPage> {
                 try {
                   UpAccount upAccount = await uniPassWeb.connect(context);
                   setState(() {
-                    accountString = "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn}";
+                    accountString = "address: ${upAccount.address} \n email: ${upAccount.email} \n newborn: ${upAccount.newborn} \n message: ${upAccount.message} signature: ${upAccount.signature}";
                   });
                   web3.Web3Client client = uniPassWeb.getProvider();
                   web3.EthereumAddress address = web3.EthereumAddress.fromHex(uniPassWeb.getAddress());

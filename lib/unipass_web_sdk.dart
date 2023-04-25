@@ -41,6 +41,7 @@ class UniPassWeb {
       appSetting: appSetting,
       returnEmail: option.returnEmail,
       connectType: option.connectType,
+      authorize: option.authorize ?? false,
     );
     Storage.init();
   }

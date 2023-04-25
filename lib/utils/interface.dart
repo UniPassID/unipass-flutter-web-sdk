@@ -32,8 +32,16 @@ class UpAccount {
   String address;
   String email;
   bool newborn;
+  String message;
+  String signature;
 
-  UpAccount({required this.address, this.email = "", this.newborn = false});
+  UpAccount({
+    required this.address,
+    this.email = "",
+    this.newborn = false,
+    this.message = "",
+    this.signature = "",
+  });
 
   @override
   String toString() {
@@ -41,6 +49,8 @@ class UpAccount {
       "address": address,
       "email": email,
       "newborn": newborn,
+      "message": message,
+      "signature": signature,
     };
     return json.encode(value);
   }
@@ -83,6 +93,7 @@ class UniPassOption {
   AppSetting? appSetting;
   bool? returnEmail;
   ConnectType? connectType;
+  bool? authorize;
 
   UniPassOption({
     this.nodeRPC,
@@ -92,6 +103,7 @@ class UniPassOption {
     this.appSetting,
     this.returnEmail,
     this.connectType = ConnectType.both,
+    this.authorize,
   });
 }
 
@@ -105,6 +117,7 @@ class UniPassConfig {
   AppSetting appSetting;
   bool? returnEmail;
   ConnectType? connectType;
+  bool authorize;
 
   UniPassConfig({
     required this.nodeRPC,
@@ -115,5 +128,7 @@ class UniPassConfig {
     required this.appSetting,
     this.returnEmail,
     this.connectType,
+    required this.authorize,
   });
 }
+

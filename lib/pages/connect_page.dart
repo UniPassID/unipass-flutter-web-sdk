@@ -14,12 +14,14 @@ class ConnectPage extends StatefulWidget {
     required this.url,
     required this.appSetting,
     required this.returnEmail,
+    required this.authorize,
   }) : super(key: key);
 
   final Completer<UpAccount> connectFuture;
   final String url;
   final AppSetting appSetting;
   final bool returnEmail;
+  final bool authorize;
 
   @override
   State<ConnectPage> createState() => _ConnectPageState();
@@ -126,6 +128,7 @@ class _ConnectPageState extends State<ConnectPage> {
           },
           "payload": {
             "returnEmail": widget.returnEmail,
+            "authorize": widget.authorize,
           }
         });
         controller.evaluateJavascript(source: """
@@ -149,11 +152,12 @@ class _ConnectPageState extends State<ConnectPage> {
                 }
                 return;
               }
-
               UpAccount upAccount = UpAccount(
                 address: payload["data"]["address"],
                 email: payload["data"]["email"] ?? "",
                 newborn: payload["data"]["newborn"],
+                message: payload["data"]["message"] ?? "",
+                signature: payload["data"]["signature"] ?? "",
               );
               if (!widget.connectFuture.isCompleted) {
                 Navigator.pop(context);
