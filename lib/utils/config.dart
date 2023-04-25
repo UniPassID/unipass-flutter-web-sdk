@@ -7,13 +7,42 @@ class RpcUrl {
   String ethMainnet;
   String bscMainnet;
   String rangersMainnet;
+  String arbitrumMainnet;
+  String avalancheMainnet;
+  String kccMainnet;
+  String platonMainnet;
+  String okcMainnet;
+
   String polygonMumbai;
   String ethGoerli;
   String bscTestnet;
   String rangersRobin;
+  String arbitrumTestnet;
+  String avalancheTestnet;
+  String kccTestnet;
+  String platonTestnet;
+  String okcTestnet;
 
-  RpcUrl(this.polygonMainnet, this.ethMainnet, this.bscMainnet, this.rangersMainnet, this.polygonMumbai, this.bscTestnet,
-      this.ethGoerli, this.rangersRobin);
+  RpcUrl(
+    this.polygonMainnet,
+    this.ethMainnet,
+    this.bscMainnet,
+    this.rangersMainnet,
+    this.arbitrumMainnet,
+    this.avalancheMainnet,
+    this.kccMainnet,
+    this.platonMainnet,
+    this.okcMainnet,
+    this.polygonMumbai,
+    this.bscTestnet,
+    this.ethGoerli,
+    this.rangersRobin,
+    this.arbitrumTestnet,
+    this.avalancheTestnet,
+    this.kccTestnet,
+    this.platonTestnet,
+    this.okcTestnet,
+  );
 }
 
 RpcUrl rpcUrl = RpcUrl(
@@ -21,10 +50,20 @@ RpcUrl rpcUrl = RpcUrl(
   "https://node.wallet.unipass.id/eth-mainnet",
   "https://node.wallet.unipass.id/bsc-mainnet",
   "https://node.wallet.unipass.id/rangers-mainnet",
+  "https://node.wallet.unipass.id/arbitrum-mainnet",
+  "https://node.wallet.unipass.id/avalanche-mainnet",
+  "https://node.wallet.unipass.id/kcc-mainnet",
+  "https://node.wallet.unipass.id/platon-mainnet",
+  "https://node.wallet.unipass.id/okc-mainnet",
   "https://node.wallet.unipass.id/polygon-mumbai",
   "https://node.wallet.unipass.id/eth-goerli",
   "https://node.wallet.unipass.id/bsc-testnet",
   "https://node.wallet.unipass.id/rangers-robin",
+  "https://node.wallet.unipass.id/arbitrum-testnet",
+  "https://node.wallet.unipass.id/avalanche-testnet",
+  "https://node.wallet.unipass.id/kcc-testnet",
+  "https://node.wallet.unipass.id/platon-testnet",
+  "https://node.wallet.unipass.id/okc-testnet",
 );
 
 String getRpcUrl(Environment env, ChainType chainType) {
@@ -38,6 +77,16 @@ String getRpcUrl(Environment env, ChainType chainType) {
         return rpcUrl.bscTestnet;
       case ChainType.rangers:
         return rpcUrl.rangersRobin;
+      case ChainType.arbitrum:
+        return rpcUrl.arbitrumTestnet;
+      case ChainType.avalanche:
+        return rpcUrl.avalancheTestnet;
+      case ChainType.kcc:
+        return rpcUrl.kccTestnet;
+      case ChainType.platon:
+        return rpcUrl.platonTestnet;
+      case ChainType.okc:
+        return rpcUrl.okcTestnet;
     }
   } else {
     switch (chainType) {
@@ -49,13 +98,23 @@ String getRpcUrl(Environment env, ChainType chainType) {
         return rpcUrl.bscMainnet;
       case ChainType.rangers:
         return rpcUrl.rangersMainnet;
+      case ChainType.arbitrum:
+        return rpcUrl.arbitrumMainnet;
+      case ChainType.avalanche:
+        return rpcUrl.avalancheMainnet;
+      case ChainType.kcc:
+        return rpcUrl.kccMainnet;
+      case ChainType.platon:
+        return rpcUrl.platonMainnet;
+      case ChainType.okc:
+        return rpcUrl.okcMainnet;
     }
   }
 }
 
 const String upDomain = "wallet.unipass.id";
 
-String getWalletUrl(MessageType type, String domain, String? protocol, { ConnectType? connectType }) {
+String getWalletUrl(MessageType type, String domain, String? protocol, {ConnectType? connectType}) {
   final protocol_ = protocol ?? "https";
   final domain_ = domain;
 

@@ -87,44 +87,32 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("polygon"),
-            Radio<ChainType>(
-              value: ChainType.polygon,
-              groupValue: chainType,
-              onChanged: (ChainType? value) {
-                setState(() {
-                  chainType = value!;
-                });
-              },
-            ),
-            const Text("bsc"),
-            Radio<ChainType>(
-              value: ChainType.bsc,
-              groupValue: chainType,
-              onChanged: (ChainType? value) {
-                setState(() {
-                  chainType = value!;
-                });
-              },
-            ),
-            const Text("rangers"),
-            Radio<ChainType>(
-              value: ChainType.rangers,
-              groupValue: chainType,
-              onChanged: (ChainType? value) {
-                setState(() {
-                  chainType = value!;
-                });
-              },
-            ),
-          ],
+        const SizedBox(height: 40),
+        Center(
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            children: ChainType.values.map((item) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(item.name),
+                  Radio<ChainType>(
+                    value: item,
+                    groupValue: chainType,
+                    onChanged: (ChainType? value) {
+                      setState(() {
+                        chainType = value!;
+                      });
+                    },
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 40),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -164,7 +152,12 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.google, returnEmail: returnEmail);
+                  return TestPage(
+                      theme: theme,
+                      chainType: chainType,
+                      domain: domain,
+                      connectType: ConnectType.google,
+                      returnEmail: returnEmail);
                 }),
               );
             },
@@ -178,7 +171,12 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TestPage(theme: theme, chainType: chainType, domain: domain, connectType: ConnectType.email, returnEmail: returnEmail);
+                  return TestPage(
+                      theme: theme,
+                      chainType: chainType,
+                      domain: domain,
+                      connectType: ConnectType.email,
+                      returnEmail: returnEmail);
                 }),
               );
             },

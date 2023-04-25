@@ -7,15 +7,34 @@ import 'package:web3dart/crypto.dart';
 
 import 'erc20.g.dart';
 
+const ethUsdcAddress = "0x365E05Fd986245d14c740c139DF8712AD8807874";
 const polygonUsdcAddress = "0x87F0E95E11a49f56b329A1c143Fb22430C07332a";
 const bscUsdcAddress = "0x64544969ed7EBf5f083679233325356EbE738930";
 const rangersUsdcAddress = "0xd6ed1c13914ff1b08737b29de4039f542162cae1";
+const arbitrumUsdcAddress = "0x8667Bfb67d4D9fd1e61168dc872e17f637964547";
+const avalancheUsdcAddress = "0x5425890298aed601595a70AB815c96711a31Bc65";
+const kccUsdcAddress = "0xd6c7e27a598714c2226404eb054e0c074c906fc9";
+const platonUsdcAddress = "0xEd5e318045D33611E877C25F7aFE6e98e2c2933C";
+const okcUsdcAddress = "0x6b2b3F5a58c4C258f63b948566581787E45D651E";
+
+const ethUsdcDecimal = 6;
 const polygonUsdcDecimal = 6;
 const bscUsdcDecimal = 18;
 const rangersUsdcDecimal = 6;
+const arbitrumUsdcDecimal = 6;
+const avalancheUsdcDecimal = 6;
+const kccUsdcDecimal = 18;
+const platonUsdcDecimal = 6;
+const okcUsdcDecimal = 6;
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key, required this.theme, required this.chainType, required this.domain, this.connectType, this.returnEmail = false});
+  const TestPage(
+      {super.key,
+      required this.theme,
+      required this.chainType,
+      required this.domain,
+      this.connectType,
+      this.returnEmail = false});
 
   final String domain;
   final UnipassTheme theme;
@@ -92,10 +111,18 @@ class _TestPage extends State<TestPage> {
                   });
                   web3.Web3Client client = uniPassWeb.getProvider();
                   web3.EthereumAddress address = web3.EthereumAddress.fromHex(uniPassWeb.getAddress());
-                  web3.EtherAmount balance_ = await client.getBalance(address);
+                  print("address.toString()");
+                  print(address.toString().toLowerCase());
+                  print(web3.EthereumAddress.fromHex(address.toString().toLowerCase()));
+                  web3.EtherAmount balance_ =
+                      await client.getBalance(web3.EthereumAddress.fromHex(address.toString().toLowerCase()));
+                  print('balance_');
+                  Erc20 contract =
+                      Erc20(address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType).toLowerCase()), client: client);
 
-                  Erc20 contract = Erc20(address: web3.EthereumAddress.fromHex(_formatUsdcAddress(widget.chainType)), client: client);
-                  BigInt usdcBalance_ = await contract.balanceOf(address);
+                  print('balance_2');
+
+                  BigInt usdcBalance_ = await contract.balanceOf(web3.EthereumAddress.fromHex(address.toString().toLowerCase()));
 
                   print("${widget.chainType.name} balance: ${balance_.getInWei.toString()}");
                   print("usdcBalance: ${usdcBalance_.toString()}");
@@ -357,7 +384,8 @@ class _TestPage extends State<TestPage> {
                   ).self.function("transfer").encodeCall(
                     [
                       web3.EthereumAddress.fromHex(_toErc20Controller.text),
-                      etherToWei(_transactionErc20Controller.text, decimal: _formatUsdcDecimal(widget.chainType), toString: false),
+                      etherToWei(_transactionErc20Controller.text,
+                          decimal: _formatUsdcDecimal(widget.chainType), toString: false),
                     ],
                   );
 
@@ -434,23 +462,41 @@ class _TestPage extends State<TestPage> {
   }
 
   String _formatNativeTokenName(ChainType chainType) {
+    if (chainType == ChainType.eth) return "ETH";
     if (chainType == ChainType.polygon) return "Matic";
     if (chainType == ChainType.bsc) return "BNB";
     if (chainType == ChainType.rangers) return "RPG";
+    if (chainType == ChainType.arbitrum) return "ETH";
+    if (chainType == ChainType.avalanche) return "AVAX";
+    if (chainType == ChainType.kcc) return "KCS";
+    if (chainType == ChainType.platon) return "LAT";
+    if (chainType == ChainType.okc) return "OKT";
     return "";
   }
 
   String _formatUsdcAddress(ChainType chainType) {
+    if (chainType == ChainType.eth) return ethUsdcAddress;
     if (chainType == ChainType.polygon) return polygonUsdcAddress;
     if (chainType == ChainType.bsc) return bscUsdcAddress;
     if (chainType == ChainType.rangers) return rangersUsdcAddress;
+    if (chainType == ChainType.arbitrum) return arbitrumUsdcAddress;
+    if (chainType == ChainType.avalanche) return avalancheUsdcAddress;
+    if (chainType == ChainType.kcc) return kccUsdcAddress;
+    if (chainType == ChainType.platon) return platonUsdcAddress;
+    if (chainType == ChainType.okc) return okcUsdcAddress;
     return "";
   }
 
   int _formatUsdcDecimal(ChainType chainType) {
+    if (chainType == ChainType.eth) return ethUsdcDecimal;
     if (chainType == ChainType.polygon) return polygonUsdcDecimal;
     if (chainType == ChainType.bsc) return bscUsdcDecimal;
     if (chainType == ChainType.rangers) return rangersUsdcDecimal;
+    if (chainType == ChainType.arbitrum) return arbitrumUsdcDecimal;
+    if (chainType == ChainType.avalanche) return avalancheUsdcDecimal;
+    if (chainType == ChainType.kcc) return kccUsdcDecimal;
+    if (chainType == ChainType.platon) return platonUsdcDecimal;
+    if (chainType == ChainType.okc) return okcUsdcDecimal;
     return 18;
   }
 }
