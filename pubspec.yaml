@@ -1,6 +1,6 @@
 name: unipass_web_sdk
 description: A Flutter plugin that allows you using unipass with webview page.
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/UniPassID/unipass-flutter-web-sdk
 
 environment:

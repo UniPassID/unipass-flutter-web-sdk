@@ -1,3 +1,3 @@
-## 0.0.6
+## 0.0.7
 
-* add supported chain & add authorize param.
+* return new provider when _update.

@@ -109,6 +109,7 @@ class UniPassWeb {
     }
     if (nodeRPC != null) {
       _config.nodeRPC = nodeRPC;
+      _provider = web3.Web3Client(nodeRPC, Client());
     }
   }
 
